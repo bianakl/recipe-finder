@@ -11,6 +11,7 @@ import { CookingHistory } from './components/CookingHistory';
 import { MealSuggestions } from './components/MealSuggestions';
 import { IngredientSearch } from './components/IngredientSearch';
 import { IngredientsExplorer } from './components/IngredientsExplorer';
+import { DataManager } from './components/DataManager';
 import { FilterBar } from './components/FilterBar';
 import { EmptyState } from './components/EmptyState';
 import { SkeletonGrid } from './components/SkeletonCard';
@@ -27,6 +28,7 @@ const tabs = [
   { id: 'history', label: 'History', icon: '📜' },
   { id: 'suggestions', label: 'Ideas', icon: '💡' },
   { id: 'ingredients', label: 'Ingredients', icon: '🧪' },
+  { id: 'data', label: 'Data', icon: '💾' },
 ];
 
 function App() {
@@ -280,6 +282,18 @@ function App() {
               transition={{ duration: 0.3 }}
             >
               <IngredientsExplorer />
+            </motion.div>
+          )}
+
+          {activeTab === 'data' && (
+            <motion.div
+              key="data"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <DataManager />
             </motion.div>
           )}
         </AnimatePresence>
