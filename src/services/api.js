@@ -167,7 +167,7 @@ export const MOCK_RECIPES = [
   {
     idMeal: 'mock10',
     strMeal: 'Overnight Oats',
-    strMealThumb: 'https://www.themealdb.com/images/media/meals/rsqwus1511640214.jpg',
+    strMealThumb: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&h=400&fit=crop',
     strCategory: 'Breakfast',
     strArea: 'American',
     strTags: 'Breakfast,Healthy,MealPrep',
