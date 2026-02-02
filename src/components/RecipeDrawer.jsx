@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
+import { useSettings, convertMeasurement } from '../hooks/useSettings';
 import { getRecipeById, parseIngredients, scaleIngredients } from '../services/api';
 import { StarRating } from './StarRating';
 
@@ -11,6 +12,10 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   const [servings, setServings] = useState(4);
   const [note, setNote] = useState('');
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [unitOverride, setUnitOverride] = useState(null); // null means use global setting
+
+  const { settings } = useSettings();
+  const currentUnit = unitOverride || settings.measurementSystem;
 
   const {
     isRecipeSaved,
@@ -331,7 +336,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                   <>
                     {/* Ingredients with Scaling */}
                     <div>
-                      <div className="flex items-center justify-between mb-5">
+                      <div className="flex items-center justify-between mb-4">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                           <span className="w-8 h-8 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-brand-600 dark:text-brand-400">
                             📝
@@ -365,21 +370,54 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                           </div>
                         </div>
                       </div>
-                      <ul className="grid gap-3">
-                        {ingredients.map((item, i) => (
-                          <motion.li
-                            key={i}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.03 }}
-                            className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50"
+
+                      {/* Unit Toggle */}
+                      <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Units:</span>
+                        <div className="flex items-center bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setUnitOverride('imperial')}
+                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
+                              currentUnit === 'imperial'
+                                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            }`}
                           >
-                            <span className="w-2 h-2 rounded-full bg-gradient-to-r from-brand-500 to-pink-500" />
-                            <span className="text-gray-700 dark:text-gray-300">
-                              <span className="font-semibold text-gray-900 dark:text-white">{item.measure}</span> {item.ingredient}
-                            </span>
-                          </motion.li>
-                        ))}
+                            🇺🇸 Imperial
+                          </motion.button>
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setUnitOverride('metric')}
+                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
+                              currentUnit === 'metric'
+                                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            }`}
+                          >
+                            🌍 Metric
+                          </motion.button>
+                        </div>
+                      </div>
+
+                      <ul className="grid gap-3">
+                        {ingredients.map((item, i) => {
+                          const convertedMeasure = convertMeasurement(item.measure, currentUnit);
+                          return (
+                            <motion.li
+                              key={i}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.03 }}
+                              className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50"
+                            >
+                              <span className="w-2 h-2 rounded-full bg-gradient-to-r from-brand-500 to-pink-500" />
+                              <span className="text-gray-700 dark:text-gray-300">
+                                <span className="font-semibold text-gray-900 dark:text-white">{convertedMeasure}</span> {item.ingredient}
+                              </span>
+                            </motion.li>
+                          );
+                        })}
                       </ul>
                     </div>
 
