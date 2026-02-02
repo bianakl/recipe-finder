@@ -9,6 +9,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   const [fullRecipe, setFullRecipe] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showMealPlanModal, setShowMealPlanModal] = useState(false);
+  const [selectedSlots, setSelectedSlots] = useState([]); // For multi-select meal slots
   const [servings, setServings] = useState(4);
   const [note, setNote] = useState('');
   const [showNoteInput, setShowNoteInput] = useState(false);
@@ -69,12 +70,34 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
     }
   };
 
-  const handleAddToMealPlan = (day, meal) => {
+  const toggleSlotSelection = (day, meal) => {
+    const slotKey = `${day}-${meal}`;
+    setSelectedSlots(prev =>
+      prev.includes(slotKey)
+        ? prev.filter(s => s !== slotKey)
+        : [...prev, slotKey]
+    );
+  };
+
+  const handleAddToSelectedSlots = () => {
+    if (selectedSlots.length === 0) return;
+
     if (!isSaved) {
       saveRecipe(fullRecipe || recipe);
     }
-    addToMealPlan(day, meal, recipe.idMeal);
+
+    selectedSlots.forEach(slotKey => {
+      const [day, meal] = slotKey.split('-');
+      addToMealPlan(day, meal, recipe.idMeal);
+    });
+
+    setSelectedSlots([]);
     setShowMealPlanModal(false);
+  };
+
+  const handleOpenMealPlanModal = () => {
+    setSelectedSlots([]);
+    setShowMealPlanModal(true);
   };
 
   const handleMarkAsCooked = () => {
@@ -218,7 +241,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                   </motion.button>
 
                   <motion.button
-                    onClick={() => setShowMealPlanModal(true)}
+                    onClick={handleOpenMealPlanModal}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="flex-1 py-3 px-4 rounded-2xl font-bold bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 flex items-center justify-center gap-2"
@@ -477,40 +500,84 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.9, opacity: 0, y: 20 }}
                   onClick={(e) => e.stopPropagation()}
-                  className="bg-white dark:bg-gray-900 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[80vh] overflow-hidden"
+                  className="bg-white dark:bg-gray-900 rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-hidden"
                 >
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">
                     Add to Meal Plan
                   </h3>
-                  <div className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin pr-2">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
+                    Select multiple days and meals
+                  </p>
+
+                  {selectedSlots.length > 0 && (
+                    <div className="mb-4 p-3 bg-brand-50 dark:bg-brand-900/20 rounded-xl">
+                      <p className="text-sm font-medium text-brand-700 dark:text-brand-300">
+                        {selectedSlots.length} slot{selectedSlots.length !== 1 ? 's' : ''} selected
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin pr-2">
                     {DAYS.map(day => (
                       <div key={day} className="space-y-2">
                         <p className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                           {DAY_LABELS[day]}
                         </p>
                         <div className="flex gap-2">
-                          {MEALS.map(meal => (
-                            <motion.button
-                              key={meal}
-                              onClick={() => handleAddToMealPlan(day, meal)}
-                              whileHover={{ scale: 1.03 }}
-                              whileTap={{ scale: 0.97 }}
-                              className="flex-1 py-3 px-4 text-sm font-semibold rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-brand-100 dark:hover:bg-brand-900/30 hover:text-brand-700 dark:hover:text-brand-300 transition-all capitalize"
-                            >
-                              {meal}
-                            </motion.button>
-                          ))}
+                          {MEALS.map(meal => {
+                            const slotKey = `${day}-${meal}`;
+                            const isSelected = selectedSlots.includes(slotKey);
+                            return (
+                              <motion.button
+                                key={meal}
+                                onClick={() => toggleSlotSelection(day, meal)}
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                className={`flex-1 py-3 px-4 text-sm font-semibold rounded-xl transition-all capitalize flex items-center justify-center gap-2 ${
+                                  isSelected
+                                    ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                }`}
+                              >
+                                {isSelected && (
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                                {meal}
+                              </motion.button>
+                            );
+                          })}
                         </div>
                       </div>
                     ))}
                   </div>
-                  <motion.button
-                    onClick={() => setShowMealPlanModal(false)}
-                    whileHover={{ scale: 1.02 }}
-                    className="mt-6 w-full py-3 text-gray-500 hover:text-gray-900 dark:hover:text-white font-semibold transition-colors"
-                  >
-                    Cancel
-                  </motion.button>
+
+                  <div className="mt-6 space-y-3">
+                    <motion.button
+                      onClick={handleAddToSelectedSlots}
+                      disabled={selectedSlots.length === 0}
+                      whileHover={{ scale: selectedSlots.length > 0 ? 1.02 : 1 }}
+                      whileTap={{ scale: selectedSlots.length > 0 ? 0.98 : 1 }}
+                      className={`w-full py-3 font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+                        selectedSlots.length > 0
+                          ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/30'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Add to {selectedSlots.length || ''} Meal{selectedSlots.length !== 1 ? 's' : ''}
+                    </motion.button>
+                    <motion.button
+                      onClick={() => setShowMealPlanModal(false)}
+                      whileHover={{ scale: 1.02 }}
+                      className="w-full py-3 text-gray-500 hover:text-gray-900 dark:hover:text-white font-semibold transition-colors"
+                    >
+                      Cancel
+                    </motion.button>
+                  </div>
                 </motion.div>
               </motion.div>
             )}
