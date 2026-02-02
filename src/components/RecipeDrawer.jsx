@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
-import { useSettings, convertMeasurement } from '../hooks/useSettings';
+import { useSettings, convertMeasurement } from '../hooks/useSettings.jsx';
 import { getRecipeById, parseIngredients, scaleIngredients } from '../services/api';
 import { StarRating } from './StarRating';
 
