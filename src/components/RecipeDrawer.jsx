@@ -24,13 +24,28 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
     unsaveRecipe,
     DAYS,
     MEALS,
+    mealPlan,
     addToMealPlan,
     addToCookingHistory,
     getRecipeNote,
     setRecipeNote,
     getRecipeRating,
-    setRecipeRating
+    setRecipeRating,
+    getRecipeById: getRecipeFromContext
   } = useRecipes();
+
+  // Check if a slot is occupied by another recipe
+  const isSlotOccupied = (day, meal) => {
+    const existingId = mealPlan?.[day]?.[meal];
+    return existingId && existingId !== recipe?.idMeal;
+  };
+
+  const getOccupyingRecipeName = (day, meal) => {
+    const existingId = mealPlan?.[day]?.[meal];
+    if (!existingId) return null;
+    const existingRecipe = getRecipeFromContext(existingId);
+    return existingRecipe?.strMeal || 'Another recipe';
+  };
 
   useEffect(() => {
     if (recipe && isOpen) {
@@ -509,13 +524,31 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                     Select multiple days and meals
                   </p>
 
-                  {selectedSlots.length > 0 && (
-                    <div className="mb-4 p-3 bg-brand-50 dark:bg-brand-900/20 rounded-xl">
-                      <p className="text-sm font-medium text-brand-700 dark:text-brand-300">
-                        {selectedSlots.length} slot{selectedSlots.length !== 1 ? 's' : ''} selected
-                      </p>
-                    </div>
-                  )}
+                  {selectedSlots.length > 0 && (() => {
+                    const occupiedSelected = selectedSlots.filter(slotKey => {
+                      const [day, meal] = slotKey.split('-');
+                      return isSlotOccupied(day, meal);
+                    });
+                    return (
+                      <div className="mb-4 space-y-2">
+                        <div className="p-3 bg-brand-50 dark:bg-brand-900/20 rounded-xl">
+                          <p className="text-sm font-medium text-brand-700 dark:text-brand-300">
+                            {selectedSlots.length} slot{selectedSlots.length !== 1 ? 's' : ''} selected
+                          </p>
+                        </div>
+                        {occupiedSelected.length > 0 && (
+                          <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+                            <p className="text-sm font-medium text-amber-700 dark:text-amber-300 flex items-center gap-2">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                              </svg>
+                              {occupiedSelected.length} slot{occupiedSelected.length !== 1 ? 's' : ''} will be replaced
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin pr-2">
                     {DAYS.map(day => (
@@ -527,16 +560,23 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                           {MEALS.map(meal => {
                             const slotKey = `${day}-${meal}`;
                             const isSelected = selectedSlots.includes(slotKey);
+                            const occupied = isSlotOccupied(day, meal);
+                            const mealLabel = meal.replace('_', ' ').replace('morning snack', 'AM').replace('afternoon snack', 'PM');
                             return (
                               <motion.button
                                 key={meal}
                                 onClick={() => toggleSlotSelection(day, meal)}
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}
-                                className={`flex-1 py-3 px-4 text-sm font-semibold rounded-xl transition-all capitalize flex items-center justify-center gap-2 ${
+                                title={occupied ? `Will replace: ${getOccupyingRecipeName(day, meal)}` : ''}
+                                className={`flex-1 py-3 px-2 text-xs font-semibold rounded-xl transition-all capitalize flex flex-col items-center justify-center gap-1 relative ${
                                   isSelected
-                                    ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30'
-                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                    ? occupied
+                                      ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
+                                      : 'bg-brand-500 text-white shadow-lg shadow-brand-500/30'
+                                    : occupied
+                                      ? 'bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 ring-2 ring-amber-300 dark:ring-amber-700'
+                                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                                 }`}
                               >
                                 {isSelected && (
@@ -544,7 +584,10 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                   </svg>
                                 )}
-                                {meal}
+                                {occupied && !isSelected && (
+                                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-white text-[10px] rounded-full flex items-center justify-center">!</span>
+                                )}
+                                {mealLabel}
                               </motion.button>
                             );
                           })}

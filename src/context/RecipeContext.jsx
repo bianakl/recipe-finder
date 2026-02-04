@@ -126,6 +126,22 @@ export function RecipeProvider({ children }) {
     setMealPlan(createEmptyMealPlan());
   }, [setMealPlan]);
 
+  const clearDayPlan = useCallback((day) => {
+    setMealPlan(prev => {
+      const validated = validateMealPlan(prev);
+      return {
+        ...validated,
+        [day]: {
+          breakfast: null,
+          morning_snack: null,
+          lunch: null,
+          afternoon_snack: null,
+          dinner: null
+        }
+      };
+    });
+  }, [setMealPlan]);
+
   const getRecipeById = useCallback((recipeId) => {
     const recipes = Array.isArray(savedRecipes) ? savedRecipes : [];
     const saved = recipes.find(r => r.idMeal === recipeId);
@@ -239,6 +255,7 @@ export function RecipeProvider({ children }) {
       removeFromMealPlan,
       swapMeals,
       clearMealPlan,
+      clearDayPlan,
       getRecipeById,
       cookingHistory: safeHistory,
       addToCookingHistory,

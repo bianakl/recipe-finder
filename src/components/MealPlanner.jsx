@@ -40,7 +40,10 @@ const MEAL_LABELS = {
 };
 
 export function MealPlanner({ onRecipeClick }) {
-  const { savedRecipes, mealPlan, DAYS, MEALS, addToMealPlan, removeFromMealPlan, clearMealPlan, swapMeals, getRecipeById } = useRecipes();
+  const { savedRecipes, mealPlan, DAYS, MEALS, addToMealPlan, removeFromMealPlan, clearMealPlan, clearDayPlan, swapMeals, getRecipeById } = useRecipes();
+
+  // Check if a day has any meals
+  const dayHasMeals = (day) => MEALS.some(meal => mealPlan?.[day]?.[meal]);
   const [selectingSlot, setSelectingSlot] = useState(null);
   const [draggedItem, setDraggedItem] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
@@ -158,6 +161,17 @@ export function MealPlanner({ onRecipeClick }) {
                 <span className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   {DAY_LABELS[day]}
                 </span>
+                {dayHasMeals(day) && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    onClick={() => clearDayPlan(day)}
+                    className="ml-1 text-[10px] text-red-400 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400 transition-colors"
+                    title={`Clear ${DAY_FULL[day]}`}
+                  >
+                    clear
+                  </motion.button>
+                )}
               </motion.div>
             ))}
 

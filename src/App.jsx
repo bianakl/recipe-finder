@@ -18,6 +18,7 @@ import { EmptyState } from './components/EmptyState';
 import { SkeletonGrid } from './components/SkeletonCard';
 import { Walkthrough, ExploreButton } from './components/Walkthrough';
 import { useRecipeSearch } from './hooks/useRecipeSearch';
+import { useTabHistory, useBackButton } from './hooks/useBackButton';
 import { filterRecipes } from './services/api';
 
 const tabs = [
@@ -57,16 +58,25 @@ function App() {
 
   const { results, isLoading, error, hasSearched } = useRecipeSearch(searchQuery);
 
-  // Apply filters to search results
-  const filteredResults = filterRecipes(results, filters);
+  const handleCloseDrawer = () => {
+    setSelectedRecipe(null);
+  };
 
   const handleRecipeClick = (recipe) => {
     setSelectedRecipe(recipe);
   };
 
-  const handleCloseDrawer = () => {
-    setSelectedRecipe(null);
-  };
+  // Browser history integration for tabs
+  useTabHistory(activeTab, setActiveTab, 'search');
+
+  // Back button support for recipe drawer
+  useBackButton(!!selectedRecipe, handleCloseDrawer, 'recipeDrawer');
+
+  // Back button support for ingredient search modal
+  useBackButton(showIngredientSearch, () => setShowIngredientSearch(false), 'ingredientSearch');
+
+  // Apply filters to search results
+  const filteredResults = filterRecipes(results, filters);
 
   const handleTagClick = (type, value) => {
     setSelectedRecipe(null);

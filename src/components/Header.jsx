@@ -34,11 +34,17 @@ export function Header({ searchQuery, onSearchChange, isLoading, onIngredientSea
               whileTap={{ scale: 0.95 }}
               onClick={onIngredientSearch}
               data-tour="fridge"
-              className="shrink-0 px-4 py-3 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium flex items-center gap-2 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
-              title="Search by ingredients"
+              className="shrink-0 px-4 py-3 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium flex items-center gap-2 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors group relative"
+              title="Find recipes by what's in your fridge"
             >
               <span>🧊</span>
-              <span className="hidden lg:inline">Fridge</span>
+              <span className="hidden lg:inline">What's in my fridge?</span>
+              <span className="lg:hidden">Fridge</span>
+              {/* Tooltip for clarity */}
+              <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">
+                Find recipes with ingredients you have
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+              </div>
             </motion.button>
           </div>
 
@@ -58,6 +64,7 @@ export function Header({ searchQuery, onSearchChange, isLoading, onIngredientSea
             onClick={onIngredientSearch}
             data-tour="fridge-mobile"
             className="shrink-0 w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 flex items-center justify-center"
+            title="Find recipes by ingredients"
           >
             <span className="text-xl">🧊</span>
           </motion.button>

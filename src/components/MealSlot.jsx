@@ -48,12 +48,26 @@ export function MealSlot({ recipe, onAdd, onRemove, onView, draggable, onDragSta
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-      {/* Drag indicator */}
+      {/* Drag handle - more prominent and with tooltip */}
       {draggable && (
-        <div className="absolute top-2 left-2 w-6 h-6 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-          </svg>
+        <div
+          className="absolute top-2 left-2 cursor-grab active:cursor-grabbing group/drag"
+          title="Drag to swap with another meal"
+        >
+          <div className="w-7 h-7 rounded-lg bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-60 group-hover:opacity-100 group-hover/drag:bg-brand-500 transition-all duration-200 shadow-lg">
+            <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="9" cy="6" r="2" />
+              <circle cx="15" cy="6" r="2" />
+              <circle cx="9" cy="12" r="2" />
+              <circle cx="15" cy="12" r="2" />
+              <circle cx="9" cy="18" r="2" />
+              <circle cx="15" cy="18" r="2" />
+            </svg>
+          </div>
+          {/* Tooltip on hover */}
+          <div className="absolute left-0 top-9 bg-gray-900 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover/drag:opacity-100 transition-opacity pointer-events-none z-10">
+            Drag to move
+          </div>
         </div>
       )}
 
