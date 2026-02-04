@@ -25,8 +25,18 @@ const DAY_FULL = {
 
 const MEAL_STYLES = {
   breakfast: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
+  morning_snack: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
   lunch: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+  afternoon_snack: 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400',
   dinner: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
+};
+
+const MEAL_LABELS = {
+  breakfast: 'Breakfast',
+  morning_snack: 'AM Snack',
+  lunch: 'Lunch',
+  afternoon_snack: 'PM Snack',
+  dinner: 'Dinner'
 };
 
 export function MealPlanner({ onRecipeClick }) {
@@ -160,7 +170,7 @@ export function MealPlanner({ onRecipeClick }) {
                   className="flex items-center"
                 >
                   <div className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider ${MEAL_STYLES[meal]}`}>
-                    {meal}
+                    {MEAL_LABELS[meal]}
                   </div>
                 </motion.div>
                 {DAYS.map((day, dayIndex) => {
@@ -217,7 +227,7 @@ export function MealPlanner({ onRecipeClick }) {
             >
               <div className="text-center mb-6">
                 <div className={`inline-flex px-4 py-2 rounded-full text-sm font-bold mb-3 ${MEAL_STYLES[selectingSlot.meal]}`}>
-                  {DAY_FULL[selectingSlot.day]} · {selectingSlot.meal}
+                  {DAY_FULL[selectingSlot.day]} · {MEAL_LABELS[selectingSlot.meal]}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   Choose a Recipe

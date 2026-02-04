@@ -1220,6 +1220,182 @@ export function getIngredientCategories() {
   return Array.from(categories).sort();
 }
 
+// Comprehensive drinks database
+export const DRINKS_DATABASE = [
+  // Hot drinks
+  { id: 'coffee-black', name: 'Coffee (black)', icon: '☕', category: 'Hot Drinks', calories: 5, protein: 0, carbs: 0, fat: 0 },
+  { id: 'coffee-milk', name: 'Coffee with milk', icon: '☕', category: 'Hot Drinks', calories: 50, protein: 2, carbs: 5, fat: 2 },
+  { id: 'coffee-latte', name: 'Latte', icon: '☕', category: 'Hot Drinks', calories: 150, protein: 8, carbs: 15, fat: 6 },
+  { id: 'coffee-cappuccino', name: 'Cappuccino', icon: '☕', category: 'Hot Drinks', calories: 120, protein: 6, carbs: 12, fat: 5 },
+  { id: 'coffee-mocha', name: 'Mocha', icon: '☕', category: 'Hot Drinks', calories: 290, protein: 10, carbs: 35, fat: 12 },
+  { id: 'espresso', name: 'Espresso', icon: '☕', category: 'Hot Drinks', calories: 3, protein: 0, carbs: 0, fat: 0 },
+  { id: 'tea-black', name: 'Black tea', icon: '🍵', category: 'Hot Drinks', calories: 2, protein: 0, carbs: 0, fat: 0 },
+  { id: 'tea-green', name: 'Green tea', icon: '🍵', category: 'Hot Drinks', calories: 2, protein: 0, carbs: 0, fat: 0 },
+  { id: 'tea-chai', name: 'Chai latte', icon: '🍵', category: 'Hot Drinks', calories: 180, protein: 4, carbs: 30, fat: 5 },
+  { id: 'hot-chocolate', name: 'Hot chocolate', icon: '🍫', category: 'Hot Drinks', calories: 190, protein: 8, carbs: 27, fat: 6 },
+
+  // Cold drinks
+  { id: 'water', name: 'Water', icon: '💧', category: 'Cold Drinks', calories: 0, protein: 0, carbs: 0, fat: 0 },
+  { id: 'sparkling-water', name: 'Sparkling water', icon: '💧', category: 'Cold Drinks', calories: 0, protein: 0, carbs: 0, fat: 0 },
+  { id: 'iced-coffee', name: 'Iced coffee', icon: '🧊', category: 'Cold Drinks', calories: 80, protein: 1, carbs: 10, fat: 3 },
+  { id: 'iced-tea', name: 'Iced tea', icon: '🧊', category: 'Cold Drinks', calories: 90, protein: 0, carbs: 22, fat: 0 },
+  { id: 'lemonade', name: 'Lemonade', icon: '🍋', category: 'Cold Drinks', calories: 100, protein: 0, carbs: 26, fat: 0 },
+
+  // Juices
+  { id: 'orange-juice', name: 'Orange juice', icon: '🍊', category: 'Juices', calories: 110, protein: 2, carbs: 26, fat: 0 },
+  { id: 'apple-juice', name: 'Apple juice', icon: '🍎', category: 'Juices', calories: 120, protein: 0, carbs: 28, fat: 0 },
+  { id: 'grape-juice', name: 'Grape juice', icon: '🍇', category: 'Juices', calories: 150, protein: 1, carbs: 37, fat: 0 },
+  { id: 'cranberry-juice', name: 'Cranberry juice', icon: '🍒', category: 'Juices', calories: 140, protein: 0, carbs: 34, fat: 0 },
+  { id: 'tomato-juice', name: 'Tomato juice', icon: '🍅', category: 'Juices', calories: 40, protein: 2, carbs: 9, fat: 0 },
+  { id: 'carrot-juice', name: 'Carrot juice', icon: '🥕', category: 'Juices', calories: 80, protein: 2, carbs: 18, fat: 0 },
+  { id: 'green-juice', name: 'Green juice', icon: '🥬', category: 'Juices', calories: 60, protein: 2, carbs: 12, fat: 0 },
+
+  // Smoothies
+  { id: 'fruit-smoothie', name: 'Fruit smoothie', icon: '🥤', category: 'Smoothies', calories: 200, protein: 4, carbs: 40, fat: 2 },
+  { id: 'green-smoothie', name: 'Green smoothie', icon: '🥬', category: 'Smoothies', calories: 150, protein: 5, carbs: 28, fat: 3 },
+  { id: 'protein-smoothie', name: 'Protein smoothie', icon: '💪', category: 'Smoothies', calories: 280, protein: 25, carbs: 30, fat: 6 },
+  { id: 'berry-smoothie', name: 'Berry smoothie', icon: '🫐', category: 'Smoothies', calories: 180, protein: 3, carbs: 35, fat: 2 },
+  { id: 'banana-smoothie', name: 'Banana smoothie', icon: '🍌', category: 'Smoothies', calories: 220, protein: 6, carbs: 42, fat: 4 },
+
+  // Dairy
+  { id: 'milk-whole', name: 'Whole milk', icon: '🥛', category: 'Dairy', calories: 150, protein: 8, carbs: 12, fat: 8 },
+  { id: 'milk-skim', name: 'Skim milk', icon: '🥛', category: 'Dairy', calories: 90, protein: 8, carbs: 12, fat: 0 },
+  { id: 'milk-almond', name: 'Almond milk', icon: '🥛', category: 'Dairy', calories: 40, protein: 1, carbs: 2, fat: 3 },
+  { id: 'milk-oat', name: 'Oat milk', icon: '🥛', category: 'Dairy', calories: 120, protein: 3, carbs: 16, fat: 5 },
+  { id: 'milk-soy', name: 'Soy milk', icon: '🥛', category: 'Dairy', calories: 100, protein: 7, carbs: 8, fat: 4 },
+  { id: 'chocolate-milk', name: 'Chocolate milk', icon: '🍫', category: 'Dairy', calories: 210, protein: 8, carbs: 30, fat: 8 },
+  { id: 'kefir', name: 'Kefir', icon: '🥛', category: 'Dairy', calories: 110, protein: 11, carbs: 12, fat: 2 },
+
+  // Sodas
+  { id: 'cola', name: 'Cola', icon: '🥤', category: 'Sodas', calories: 140, protein: 0, carbs: 39, fat: 0 },
+  { id: 'diet-cola', name: 'Diet cola', icon: '🥤', category: 'Sodas', calories: 0, protein: 0, carbs: 0, fat: 0 },
+  { id: 'sprite', name: 'Lemon-lime soda', icon: '🥤', category: 'Sodas', calories: 140, protein: 0, carbs: 38, fat: 0 },
+  { id: 'ginger-ale', name: 'Ginger ale', icon: '🥤', category: 'Sodas', calories: 130, protein: 0, carbs: 34, fat: 0 },
+  { id: 'root-beer', name: 'Root beer', icon: '🥤', category: 'Sodas', calories: 150, protein: 0, carbs: 40, fat: 0 },
+
+  // Energy & Sports
+  { id: 'energy-drink', name: 'Energy drink', icon: '⚡', category: 'Energy & Sports', calories: 110, protein: 0, carbs: 28, fat: 0 },
+  { id: 'sports-drink', name: 'Sports drink', icon: '🏃', category: 'Energy & Sports', calories: 80, protein: 0, carbs: 21, fat: 0 },
+  { id: 'coconut-water', name: 'Coconut water', icon: '🥥', category: 'Energy & Sports', calories: 45, protein: 0, carbs: 9, fat: 0 },
+
+  // Alcohol
+  { id: 'beer', name: 'Beer (bottle)', icon: '🍺', category: 'Alcohol', calories: 150, protein: 1, carbs: 13, fat: 0 },
+  { id: 'light-beer', name: 'Light beer', icon: '🍺', category: 'Alcohol', calories: 100, protein: 1, carbs: 5, fat: 0 },
+  { id: 'wine-red', name: 'Red wine (glass)', icon: '🍷', category: 'Alcohol', calories: 125, protein: 0, carbs: 4, fat: 0 },
+  { id: 'wine-white', name: 'White wine (glass)', icon: '🥂', category: 'Alcohol', calories: 120, protein: 0, carbs: 4, fat: 0 },
+  { id: 'champagne', name: 'Champagne (glass)', icon: '🥂', category: 'Alcohol', calories: 85, protein: 0, carbs: 1, fat: 0 },
+  { id: 'cocktail', name: 'Cocktail', icon: '🍹', category: 'Alcohol', calories: 200, protein: 0, carbs: 20, fat: 0 },
+];
+
+// Comprehensive snacks database
+export const SNACKS_DATABASE = [
+  // Fruits
+  { id: 'apple', name: 'Apple', icon: '🍎', category: 'Fruits', calories: 95, protein: 0, carbs: 25, fat: 0 },
+  { id: 'banana', name: 'Banana', icon: '🍌', category: 'Fruits', calories: 105, protein: 1, carbs: 27, fat: 0 },
+  { id: 'orange', name: 'Orange', icon: '🍊', category: 'Fruits', calories: 65, protein: 1, carbs: 16, fat: 0 },
+  { id: 'grapes', name: 'Grapes (cup)', icon: '🍇', category: 'Fruits', calories: 100, protein: 1, carbs: 27, fat: 0 },
+  { id: 'strawberries', name: 'Strawberries (cup)', icon: '🍓', category: 'Fruits', calories: 50, protein: 1, carbs: 12, fat: 0 },
+  { id: 'blueberries', name: 'Blueberries (cup)', icon: '🫐', category: 'Fruits', calories: 85, protein: 1, carbs: 21, fat: 0 },
+  { id: 'mango', name: 'Mango', icon: '🥭', category: 'Fruits', calories: 135, protein: 1, carbs: 35, fat: 0 },
+  { id: 'pineapple', name: 'Pineapple (cup)', icon: '🍍', category: 'Fruits', calories: 80, protein: 1, carbs: 22, fat: 0 },
+  { id: 'watermelon', name: 'Watermelon (cup)', icon: '🍉', category: 'Fruits', calories: 45, protein: 1, carbs: 12, fat: 0 },
+  { id: 'peach', name: 'Peach', icon: '🍑', category: 'Fruits', calories: 60, protein: 1, carbs: 15, fat: 0 },
+  { id: 'pear', name: 'Pear', icon: '🍐', category: 'Fruits', calories: 100, protein: 1, carbs: 27, fat: 0 },
+  { id: 'dried-fruit', name: 'Dried fruit mix', icon: '🍇', category: 'Fruits', calories: 130, protein: 1, carbs: 31, fat: 0 },
+
+  // Nuts & Seeds
+  { id: 'almonds', name: 'Almonds (handful)', icon: '🥜', category: 'Nuts & Seeds', calories: 165, protein: 6, carbs: 6, fat: 14 },
+  { id: 'walnuts', name: 'Walnuts (handful)', icon: '🥜', category: 'Nuts & Seeds', calories: 185, protein: 4, carbs: 4, fat: 18 },
+  { id: 'cashews', name: 'Cashews (handful)', icon: '🥜', category: 'Nuts & Seeds', calories: 155, protein: 5, carbs: 9, fat: 12 },
+  { id: 'peanuts', name: 'Peanuts (handful)', icon: '🥜', category: 'Nuts & Seeds', calories: 165, protein: 7, carbs: 5, fat: 14 },
+  { id: 'pistachios', name: 'Pistachios (handful)', icon: '🥜', category: 'Nuts & Seeds', calories: 160, protein: 6, carbs: 8, fat: 13 },
+  { id: 'mixed-nuts', name: 'Mixed nuts', icon: '🥜', category: 'Nuts & Seeds', calories: 170, protein: 5, carbs: 6, fat: 15 },
+  { id: 'trail-mix', name: 'Trail mix', icon: '🥜', category: 'Nuts & Seeds', calories: 140, protein: 4, carbs: 13, fat: 9 },
+  { id: 'sunflower-seeds', name: 'Sunflower seeds', icon: '🌻', category: 'Nuts & Seeds', calories: 165, protein: 5, carbs: 7, fat: 14 },
+  { id: 'pumpkin-seeds', name: 'Pumpkin seeds', icon: '🎃', category: 'Nuts & Seeds', calories: 125, protein: 5, carbs: 5, fat: 10 },
+  { id: 'peanut-butter', name: 'Peanut butter (2 tbsp)', icon: '🥜', category: 'Nuts & Seeds', calories: 190, protein: 8, carbs: 6, fat: 16 },
+
+  // Dairy Snacks
+  { id: 'yogurt', name: 'Yogurt cup', icon: '🥛', category: 'Dairy Snacks', calories: 150, protein: 8, carbs: 20, fat: 4 },
+  { id: 'greek-yogurt', name: 'Greek yogurt', icon: '🥛', category: 'Dairy Snacks', calories: 130, protein: 17, carbs: 8, fat: 4 },
+  { id: 'cheese-stick', name: 'Cheese stick', icon: '🧀', category: 'Dairy Snacks', calories: 80, protein: 6, carbs: 1, fat: 6 },
+  { id: 'cheese-cubes', name: 'Cheese cubes (5)', icon: '🧀', category: 'Dairy Snacks', calories: 120, protein: 8, carbs: 1, fat: 10 },
+  { id: 'cottage-cheese', name: 'Cottage cheese (cup)', icon: '🧀', category: 'Dairy Snacks', calories: 110, protein: 14, carbs: 5, fat: 4 },
+  { id: 'cream-cheese', name: 'Cream cheese (2 tbsp)', icon: '🧀', category: 'Dairy Snacks', calories: 100, protein: 2, carbs: 1, fat: 10 },
+
+  // Savory Snacks
+  { id: 'chips', name: 'Potato chips (bag)', icon: '🥔', category: 'Savory Snacks', calories: 150, protein: 2, carbs: 15, fat: 10 },
+  { id: 'pretzels', name: 'Pretzels', icon: '🥨', category: 'Savory Snacks', calories: 110, protein: 3, carbs: 23, fat: 1 },
+  { id: 'popcorn', name: 'Popcorn (3 cups)', icon: '🍿', category: 'Savory Snacks', calories: 95, protein: 3, carbs: 19, fat: 1 },
+  { id: 'crackers', name: 'Crackers (6)', icon: '🍘', category: 'Savory Snacks', calories: 80, protein: 1, carbs: 13, fat: 3 },
+  { id: 'rice-cakes', name: 'Rice cakes (2)', icon: '🍘', category: 'Savory Snacks', calories: 70, protein: 2, carbs: 15, fat: 0 },
+  { id: 'tortilla-chips', name: 'Tortilla chips', icon: '🌮', category: 'Savory Snacks', calories: 140, protein: 2, carbs: 18, fat: 7 },
+  { id: 'hummus', name: 'Hummus (2 tbsp)', icon: '🥙', category: 'Savory Snacks', calories: 50, protein: 2, carbs: 4, fat: 3 },
+  { id: 'guacamole', name: 'Guacamole (2 tbsp)', icon: '🥑', category: 'Savory Snacks', calories: 50, protein: 1, carbs: 3, fat: 4 },
+  { id: 'olives', name: 'Olives (10)', icon: '🫒', category: 'Savory Snacks', calories: 40, protein: 0, carbs: 2, fat: 4 },
+  { id: 'edamame', name: 'Edamame (cup)', icon: '🫛', category: 'Savory Snacks', calories: 190, protein: 17, carbs: 15, fat: 8 },
+
+  // Sweet Snacks
+  { id: 'cookie', name: 'Cookie', icon: '🍪', category: 'Sweet Snacks', calories: 160, protein: 2, carbs: 22, fat: 8 },
+  { id: 'brownie', name: 'Brownie', icon: '🍫', category: 'Sweet Snacks', calories: 230, protein: 3, carbs: 30, fat: 12 },
+  { id: 'muffin', name: 'Muffin', icon: '🧁', category: 'Sweet Snacks', calories: 340, protein: 5, carbs: 50, fat: 14 },
+  { id: 'donut', name: 'Donut', icon: '🍩', category: 'Sweet Snacks', calories: 270, protein: 4, carbs: 31, fat: 15 },
+  { id: 'chocolate-bar', name: 'Chocolate bar', icon: '🍫', category: 'Sweet Snacks', calories: 210, protein: 3, carbs: 24, fat: 13 },
+  { id: 'dark-chocolate', name: 'Dark chocolate (2 sq)', icon: '🍫', category: 'Sweet Snacks', calories: 90, protein: 1, carbs: 8, fat: 6 },
+  { id: 'ice-cream', name: 'Ice cream (scoop)', icon: '🍦', category: 'Sweet Snacks', calories: 140, protein: 2, carbs: 16, fat: 7 },
+  { id: 'frozen-yogurt', name: 'Frozen yogurt', icon: '🍦', category: 'Sweet Snacks', calories: 100, protein: 3, carbs: 18, fat: 2 },
+  { id: 'candy', name: 'Candy (handful)', icon: '🍬', category: 'Sweet Snacks', calories: 150, protein: 0, carbs: 38, fat: 0 },
+  { id: 'gummy-bears', name: 'Gummy bears', icon: '🐻', category: 'Sweet Snacks', calories: 130, protein: 3, carbs: 30, fat: 0 },
+
+  // Healthy Bars
+  { id: 'granola-bar', name: 'Granola bar', icon: '🥜', category: 'Healthy Bars', calories: 120, protein: 2, carbs: 20, fat: 4 },
+  { id: 'protein-bar', name: 'Protein bar', icon: '💪', category: 'Healthy Bars', calories: 200, protein: 20, carbs: 22, fat: 7 },
+  { id: 'energy-bar', name: 'Energy bar', icon: '⚡', category: 'Healthy Bars', calories: 230, protein: 4, carbs: 45, fat: 5 },
+  { id: 'fruit-bar', name: 'Fruit bar', icon: '🍓', category: 'Healthy Bars', calories: 100, protein: 1, carbs: 24, fat: 0 },
+  { id: 'nut-bar', name: 'Nut bar', icon: '🥜', category: 'Healthy Bars', calories: 180, protein: 4, carbs: 18, fat: 11 },
+
+  // Vegetables
+  { id: 'carrot-sticks', name: 'Carrot sticks', icon: '🥕', category: 'Vegetables', calories: 35, protein: 1, carbs: 8, fat: 0 },
+  { id: 'celery-sticks', name: 'Celery sticks', icon: '🥬', category: 'Vegetables', calories: 15, protein: 1, carbs: 3, fat: 0 },
+  { id: 'cucumber-slices', name: 'Cucumber slices', icon: '🥒', category: 'Vegetables', calories: 15, protein: 1, carbs: 3, fat: 0 },
+  { id: 'cherry-tomatoes', name: 'Cherry tomatoes (10)', icon: '🍅', category: 'Vegetables', calories: 30, protein: 1, carbs: 6, fat: 0 },
+  { id: 'bell-pepper', name: 'Bell pepper slices', icon: '🫑', category: 'Vegetables', calories: 25, protein: 1, carbs: 5, fat: 0 },
+  { id: 'snap-peas', name: 'Snap peas (cup)', icon: '🫛', category: 'Vegetables', calories: 40, protein: 3, carbs: 7, fat: 0 },
+
+  // Prepared Snacks
+  { id: 'hard-boiled-egg', name: 'Hard boiled egg', icon: '🥚', category: 'Prepared', calories: 70, protein: 6, carbs: 0, fat: 5 },
+  { id: 'deviled-eggs', name: 'Deviled eggs (2)', icon: '🥚', category: 'Prepared', calories: 130, protein: 6, carbs: 1, fat: 11 },
+  { id: 'mini-sandwich', name: 'Mini sandwich', icon: '🥪', category: 'Prepared', calories: 180, protein: 8, carbs: 20, fat: 8 },
+  { id: 'wrap-roll', name: 'Wrap roll', icon: '🌯', category: 'Prepared', calories: 200, protein: 10, carbs: 25, fat: 7 },
+  { id: 'spring-rolls', name: 'Spring rolls (2)', icon: '🥟', category: 'Prepared', calories: 150, protein: 4, carbs: 20, fat: 6 },
+];
+
+// Search drinks and snacks
+export function searchDrinksAndSnacks(query) {
+  const lowerQuery = query.toLowerCase().trim();
+  if (!lowerQuery) return { drinks: DRINKS_DATABASE, snacks: SNACKS_DATABASE };
+
+  const drinks = DRINKS_DATABASE.filter(d =>
+    d.name.toLowerCase().includes(lowerQuery) ||
+    d.category.toLowerCase().includes(lowerQuery)
+  );
+  const snacks = SNACKS_DATABASE.filter(s =>
+    s.name.toLowerCase().includes(lowerQuery) ||
+    s.category.toLowerCase().includes(lowerQuery)
+  );
+
+  return { drinks, snacks };
+}
+
+// Get drink/snack categories
+export function getDrinkCategories() {
+  return [...new Set(DRINKS_DATABASE.map(d => d.category))];
+}
+
+export function getSnackCategories() {
+  return [...new Set(SNACKS_DATABASE.map(s => s.category))];
+}
+
 export function filterRecipes(recipes, filters) {
   if (!recipes?.length) return [];
   if (!filters.dietary?.length && !filters.cookTime && !filters.cuisine) {

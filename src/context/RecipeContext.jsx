@@ -5,12 +5,18 @@ import { MOCK_RECIPES } from '../services/api';
 const RecipeContext = createContext(null);
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-const MEALS = ['breakfast', 'lunch', 'dinner'];
+const MEALS = ['breakfast', 'morning_snack', 'lunch', 'afternoon_snack', 'dinner'];
 
 const createEmptyMealPlan = () => {
   const plan = {};
   DAYS.forEach(day => {
-    plan[day] = { breakfast: null, lunch: null, dinner: null };
+    plan[day] = {
+      breakfast: null,
+      morning_snack: null,
+      lunch: null,
+      afternoon_snack: null,
+      dinner: null
+    };
   });
   return plan;
 };
@@ -23,7 +29,9 @@ const validateMealPlan = (plan) => {
   DAYS.forEach(day => {
     validPlan[day] = {
       breakfast: plan[day]?.breakfast || null,
+      morning_snack: plan[day]?.morning_snack || null,
       lunch: plan[day]?.lunch || null,
+      afternoon_snack: plan[day]?.afternoon_snack || null,
       dinner: plan[day]?.dinner || null,
     };
   });

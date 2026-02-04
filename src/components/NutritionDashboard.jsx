@@ -1,40 +1,41 @@
 import { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
-import { calculateNutrition } from '../services/api';
+import {
+  calculateNutrition,
+  DRINKS_DATABASE,
+  SNACKS_DATABASE,
+  getDrinkCategories,
+  getSnackCategories
+} from '../services/api';
 
 const EXTRAS_KEY = 'recipe-finder-nutrition-extras';
-
-const DEFAULT_DRINKS = [
-  { id: 'coffee', name: 'Coffee (black)', icon: '☕', calories: 5, protein: 0, carbs: 0, fat: 0 },
-  { id: 'coffee-milk', name: 'Coffee with milk', icon: '☕', calories: 50, protein: 2, carbs: 5, fat: 2 },
-  { id: 'tea', name: 'Tea', icon: '🍵', calories: 2, protein: 0, carbs: 0, fat: 0 },
-  { id: 'juice', name: 'Orange juice (glass)', icon: '🍊', calories: 110, protein: 2, carbs: 26, fat: 0 },
-  { id: 'soda', name: 'Soda (can)', icon: '🥤', calories: 140, protein: 0, carbs: 39, fat: 0 },
-  { id: 'smoothie', name: 'Fruit smoothie', icon: '🥤', calories: 200, protein: 4, carbs: 40, fat: 2 },
-  { id: 'milk', name: 'Milk (glass)', icon: '🥛', calories: 150, protein: 8, carbs: 12, fat: 8 },
-  { id: 'wine', name: 'Wine (glass)', icon: '🍷', calories: 125, protein: 0, carbs: 4, fat: 0 },
-  { id: 'beer', name: 'Beer (bottle)', icon: '🍺', calories: 150, protein: 1, carbs: 13, fat: 0 },
-];
-
-const DEFAULT_SNACKS = [
-  { id: 'apple', name: 'Apple', icon: '🍎', calories: 95, protein: 0, carbs: 25, fat: 0 },
-  { id: 'banana', name: 'Banana', icon: '🍌', calories: 105, protein: 1, carbs: 27, fat: 0 },
-  { id: 'nuts', name: 'Handful of nuts', icon: '🥜', calories: 170, protein: 5, carbs: 6, fat: 15 },
-  { id: 'yogurt', name: 'Yogurt cup', icon: '🥛', calories: 150, protein: 8, carbs: 20, fat: 4 },
-  { id: 'cheese', name: 'Cheese stick', icon: '🧀', calories: 80, protein: 6, carbs: 1, fat: 6 },
-  { id: 'crackers', name: 'Crackers (5)', icon: '🍘', calories: 80, protein: 1, carbs: 13, fat: 3 },
-  { id: 'chips', name: 'Chips (small bag)', icon: '🥔', calories: 150, protein: 2, carbs: 15, fat: 10 },
-  { id: 'cookie', name: 'Cookie', icon: '🍪', calories: 160, protein: 2, carbs: 22, fat: 8 },
-  { id: 'chocolate', name: 'Chocolate bar', icon: '🍫', calories: 210, protein: 3, carbs: 24, fat: 13 },
-  { id: 'protein-bar', name: 'Protein bar', icon: '💪', calories: 200, protein: 20, carbs: 22, fat: 7 },
-];
 
 export function NutritionDashboard() {
   const { mealPlan, getRecipeById } = useRecipes();
   const [extras, setExtras] = useState({ drinks: {}, snacks: {} });
   const [showExtrasModal, setShowExtrasModal] = useState(false);
   const [extrasTab, setExtrasTab] = useState('drinks');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // Get categories for filtering
+  const drinkCategories = useMemo(() => ['all', ...getDrinkCategories()], []);
+  const snackCategories = useMemo(() => ['all', ...getSnackCategories()], []);
+
+  // Filter items based on search and category
+  const filteredItems = useMemo(() => {
+    const items = extrasTab === 'drinks' ? DRINKS_DATABASE : SNACKS_DATABASE;
+    const query = searchQuery.toLowerCase().trim();
+
+    return items.filter(item => {
+      const matchesSearch = !query ||
+        item.name.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query);
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [extrasTab, searchQuery, selectedCategory]);
 
   // Load extras from localStorage
   useEffect(() => {
@@ -63,7 +64,7 @@ export function NutritionDashboard() {
 
     // Sum drinks
     Object.entries(extras.drinks).forEach(([id, count]) => {
-      const drink = DEFAULT_DRINKS.find(d => d.id === id);
+      const drink = DRINKS_DATABASE.find(d => d.id === id);
       if (drink && count > 0) {
         calories += drink.calories * count;
         protein += drink.protein * count;
@@ -74,7 +75,7 @@ export function NutritionDashboard() {
 
     // Sum snacks
     Object.entries(extras.snacks).forEach(([id, count]) => {
-      const snack = DEFAULT_SNACKS.find(s => s.id === id);
+      const snack = SNACKS_DATABASE.find(s => s.id === id);
       if (snack && count > 0) {
         calories += snack.calories * count;
         protein += snack.protein * count;
@@ -336,7 +337,7 @@ export function NutritionDashboard() {
             <div className="space-y-2">
               {Object.entries(extras.drinks).map(([id, count]) => {
                 if (count === 0) return null;
-                const drink = DEFAULT_DRINKS.find(d => d.id === id);
+                const drink = DRINKS_DATABASE.find(d => d.id === id);
                 if (!drink) return null;
                 return (
                   <div key={id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -350,7 +351,7 @@ export function NutritionDashboard() {
               })}
               {Object.entries(extras.snacks).map(([id, count]) => {
                 if (count === 0) return null;
-                const snack = DEFAULT_SNACKS.find(s => s.id === id);
+                const snack = SNACKS_DATABASE.find(s => s.id === id);
                 if (!snack) return null;
                 return (
                   <div key={id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -405,7 +406,11 @@ export function NutritionDashboard() {
               <div className="flex gap-2 mb-4">
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setExtrasTab('drinks')}
+                  onClick={() => {
+                    setExtrasTab('drinks');
+                    setSelectedCategory('all');
+                    setSearchQuery('');
+                  }}
                   className={`flex-1 py-2 px-4 rounded-xl font-bold text-sm transition-all ${
                     extrasTab === 'drinks'
                       ? 'bg-brand-500 text-white'
@@ -416,7 +421,11 @@ export function NutritionDashboard() {
                 </motion.button>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setExtrasTab('snacks')}
+                  onClick={() => {
+                    setExtrasTab('snacks');
+                    setSelectedCategory('all');
+                    setSearchQuery('');
+                  }}
                   className={`flex-1 py-2 px-4 rounded-xl font-bold text-sm transition-all ${
                     extrasTab === 'snacks'
                       ? 'bg-brand-500 text-white'
@@ -427,9 +436,44 @@ export function NutritionDashboard() {
                 </motion.button>
               </div>
 
+              {/* Search input */}
+              <div className="relative mb-3">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={`Search ${extrasTab}...`}
+                  className="w-full px-4 py-2 pl-10 bg-gray-100 dark:bg-gray-800 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+
+              {/* Category filter */}
+              <div className="flex gap-1 mb-3 overflow-x-auto pb-1 scrollbar-hide">
+                {(extrasTab === 'drinks' ? drinkCategories : snackCategories).map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                      selectedCategory === cat
+                        ? 'bg-brand-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {cat === 'all' ? 'All' : cat}
+                  </button>
+                ))}
+              </div>
+
               {/* Items list */}
-              <div className="space-y-2 max-h-80 overflow-y-auto pr-2">
-                {(extrasTab === 'drinks' ? DEFAULT_DRINKS : DEFAULT_SNACKS).map(item => {
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+                {filteredItems.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400 dark:text-gray-500">
+                    <p className="text-sm">No {extrasTab} found</p>
+                  </div>
+                ) : filteredItems.map(item => {
                   const count = extras[extrasTab][item.id] || 0;
                   return (
                     <div
