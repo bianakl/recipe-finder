@@ -48,10 +48,10 @@ export function MealSlot({ recipe, onAdd, onRemove, onView, draggable, onDragSta
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-      {/* Drag handle - more prominent and with tooltip */}
+      {/* Drag handle - hidden on mobile (drag doesn't work well), visible on desktop hover */}
       {draggable && (
         <div
-          className="absolute top-2 left-2 cursor-grab active:cursor-grabbing group/drag"
+          className="absolute top-2 left-2 cursor-grab active:cursor-grabbing group/drag hidden sm:block"
           title="Drag to swap with another meal"
         >
           <div className="w-7 h-7 rounded-lg bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-60 group-hover:opacity-100 group-hover/drag:bg-brand-500 transition-all duration-200 shadow-lg">
@@ -64,24 +64,26 @@ export function MealSlot({ recipe, onAdd, onRemove, onView, draggable, onDragSta
               <circle cx="15" cy="18" r="2" />
             </svg>
           </div>
-          {/* Tooltip on hover */}
+          {/* Tooltip on hover - desktop only */}
           <div className="absolute left-0 top-9 bg-gray-900 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover/drag:opacity-100 transition-opacity pointer-events-none z-10">
             Drag to move
           </div>
         </div>
       )}
 
-      <p className="absolute bottom-2 left-2 right-2 text-white text-xs font-bold line-clamp-2 drop-shadow-lg">
+      <p className="absolute bottom-2 left-2 right-8 text-white text-xs font-bold line-clamp-2 drop-shadow-lg">
         {recipe.strMeal}
       </p>
+
+      {/* Delete button - always visible on mobile, hover on desktop */}
       <motion.button
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
         }}
-        initial={{ opacity: 0 }}
-        whileHover={{ scale: 1.1, backgroundColor: 'rgb(239 68 68)' }}
-        className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9, backgroundColor: 'rgb(239 68 68)' }}
+        className="absolute top-2 right-2 w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-red-500/80 sm:bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500 transition-all duration-200 shadow-lg"
         aria-label="Remove from meal plan"
       >
         <svg className="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
