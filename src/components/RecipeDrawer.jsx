@@ -561,6 +561,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                             const slotKey = `${day}-${meal}`;
                             const isSelected = selectedSlots.includes(slotKey);
                             const occupied = isSlotOccupied(day, meal);
+                            const occupyingName = occupied ? getOccupyingRecipeName(day, meal) : null;
                             const mealLabel = meal.replace('_', ' ').replace('morning snack', 'AM').replace('afternoon snack', 'PM');
                             return (
                               <motion.button
@@ -568,8 +569,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                                 onClick={() => toggleSlotSelection(day, meal)}
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}
-                                title={occupied ? `Will replace: ${getOccupyingRecipeName(day, meal)}` : ''}
-                                className={`flex-1 py-3 px-2 text-xs font-semibold rounded-xl transition-all capitalize flex flex-col items-center justify-center gap-1 relative ${
+                                className={`flex-1 py-2 px-1.5 text-[10px] font-semibold rounded-xl transition-all flex flex-col items-center justify-center gap-0.5 min-h-[56px] ${
                                   isSelected
                                     ? occupied
                                       ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
@@ -580,14 +580,21 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                                 }`}
                               >
                                 {isSelected && (
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                   </svg>
                                 )}
-                                {occupied && !isSelected && (
-                                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-white text-[10px] rounded-full flex items-center justify-center">!</span>
+                                <span className="uppercase tracking-wide">{mealLabel}</span>
+                                {occupied && (
+                                  <span className={`text-[8px] font-normal truncate max-w-full px-1 ${
+                                    isSelected ? 'text-white/80' : 'text-amber-600 dark:text-amber-400'
+                                  }`}>
+                                    {isSelected ? '↻ ' : ''}{occupyingName?.slice(0, 12)}{occupyingName?.length > 12 ? '...' : ''}
+                                  </span>
                                 )}
-                                {mealLabel}
+                                {!occupied && !isSelected && (
+                                  <span className="text-[8px] font-normal text-gray-400 dark:text-gray-500">empty</span>
+                                )}
                               </motion.button>
                             );
                           })}
