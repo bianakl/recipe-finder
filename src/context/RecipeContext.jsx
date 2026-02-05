@@ -45,6 +45,7 @@ export function RecipeProvider({ children }) {
   const [recipeNotes, setRecipeNotes] = useLocalStorage('recipeNotes', {});
   const [recipeRatings, setRecipeRatings] = useLocalStorage('recipeRatings', {});
   const [shoppingList, setShoppingList] = useLocalStorage('shoppingList', []);
+  const [pantry, setPantry] = useLocalStorage('pantry', []);
 
   const mealPlan = useMemo(() => validateMealPlan(rawMealPlan), [rawMealPlan]);
 
@@ -240,9 +241,40 @@ export function RecipeProvider({ children }) {
     setShoppingList([]);
   }, [setShoppingList]);
 
+  // Pantry Management
+  const addToPantry = useCallback((ingredient) => {
+    if (!ingredient || typeof ingredient !== 'string') return;
+    const normalized = ingredient.trim().toLowerCase();
+    if (!normalized) return;
+    setPantry(prev => {
+      const prevArray = Array.isArray(prev) ? prev : [];
+      if (prevArray.some(i => i.toLowerCase() === normalized)) {
+        return prevArray;
+      }
+      return [...prevArray, ingredient.trim()];
+    });
+  }, [setPantry]);
+
+  const removeFromPantry = useCallback((ingredient) => {
+    setPantry(prev => {
+      const prevArray = Array.isArray(prev) ? prev : [];
+      return prevArray.filter(i => i.toLowerCase() !== ingredient.toLowerCase());
+    });
+  }, [setPantry]);
+
+  const clearPantry = useCallback(() => {
+    setPantry([]);
+  }, [setPantry]);
+
+  const isInPantry = useCallback((ingredient) => {
+    const items = Array.isArray(pantry) ? pantry : [];
+    return items.some(i => i.toLowerCase() === ingredient.toLowerCase());
+  }, [pantry]);
+
   const safeRecipes = Array.isArray(savedRecipes) ? savedRecipes : [];
   const safeHistory = Array.isArray(cookingHistory) ? cookingHistory : [];
   const safeShoppingList = Array.isArray(shoppingList) ? shoppingList : [];
+  const safePantry = Array.isArray(pantry) ? pantry : [];
 
   return (
     <RecipeContext.Provider value={{
@@ -269,6 +301,11 @@ export function RecipeProvider({ children }) {
       generateShoppingList,
       toggleShoppingItem,
       clearShoppingList,
+      pantry: safePantry,
+      addToPantry,
+      removeFromPantry,
+      clearPantry,
+      isInPantry,
       DAYS,
       MEALS,
     }}>

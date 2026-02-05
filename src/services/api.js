@@ -1047,6 +1047,63 @@ export async function searchByIngredients(ingredients) {
   });
 }
 
+// Smart pantry search - returns recipes ranked by ingredient match percentage
+export function searchByPantry(pantryItems) {
+  if (!pantryItems || !pantryItems.length) return [];
+
+  const lowerPantry = pantryItems.map(i => i.toLowerCase().trim());
+
+  const results = MOCK_RECIPES.map(recipe => {
+    // Extract all recipe ingredients
+    const recipeIngredients = [];
+    for (let i = 1; i <= 20; i++) {
+      const ing = recipe[`strIngredient${i}`];
+      if (ing && ing.trim()) {
+        recipeIngredients.push(ing.trim());
+      }
+    }
+
+    // Count matched and missing ingredients
+    const matched = [];
+    const missing = [];
+
+    recipeIngredients.forEach(recipeIng => {
+      const lowerRecipeIng = recipeIng.toLowerCase();
+      const hasMatch = lowerPantry.some(pantryItem =>
+        lowerRecipeIng.includes(pantryItem) || pantryItem.includes(lowerRecipeIng)
+      );
+      if (hasMatch) {
+        matched.push(recipeIng);
+      } else {
+        missing.push(recipeIng);
+      }
+    });
+
+    const totalIngredients = recipeIngredients.length;
+    const matchedCount = matched.length;
+    const matchScore = totalIngredients > 0 ? matchedCount / totalIngredients : 0;
+
+    return {
+      ...recipe,
+      matchScore,
+      matchedCount,
+      totalIngredients,
+      matchedIngredients: matched,
+      missingIngredients: missing,
+    };
+  });
+
+  // Filter to only recipes with at least one match, then sort by match score
+  return results
+    .filter(r => r.matchedCount > 0)
+    .sort((a, b) => {
+      // Primary: match score descending
+      if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
+      // Secondary: more matched ingredients
+      return b.matchedCount - a.matchedCount;
+    });
+}
+
 export async function getRecipeById(id) {
   const mockRecipe = MOCK_RECIPES.find(r => r.idMeal === id);
   if (mockRecipe) return mockRecipe;

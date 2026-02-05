@@ -11,6 +11,7 @@ import { CookingHistory } from './components/CookingHistory';
 import { MealSuggestions } from './components/MealSuggestions';
 import { IngredientSearch } from './components/IngredientSearch';
 import { IngredientsExplorer } from './components/IngredientsExplorer';
+import { MyPantry } from './components/MyPantry';
 import { DataManager } from './components/DataManager';
 import { Settings } from './components/Settings';
 import { FilterBar } from './components/FilterBar';
@@ -23,6 +24,7 @@ import { filterRecipes } from './services/api';
 
 const tabs = [
   { id: 'search', label: 'Discover', icon: '✨' },
+  { id: 'pantry', label: 'My Pantry', icon: '🧊' },
   { id: 'saved', label: 'Saved', icon: '💜' },
   { id: 'planner', label: 'Meal Plan', icon: '📅' },
   { id: 'shopping', label: 'Shopping', icon: '🛒' },
@@ -102,7 +104,7 @@ function App() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         isLoading={isLoading}
-        onIngredientSearch={() => setShowIngredientSearch(true)}
+        onIngredientSearch={() => setActiveTab('pantry')}
       />
 
       <nav className="sticky top-20 sm:top-20 z-30 glass" data-tour="tabs">
@@ -210,6 +212,18 @@ function App() {
               {!isLoading && filteredResults.length > 0 && !ingredientResults && (
                 <RecipeGrid recipes={filteredResults} onRecipeClick={handleRecipeClick} />
               )}
+            </motion.div>
+          )}
+
+          {activeTab === 'pantry' && (
+            <motion.div
+              key="pantry"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <MyPantry onRecipeClick={handleRecipeClick} />
             </motion.div>
           )}
 
