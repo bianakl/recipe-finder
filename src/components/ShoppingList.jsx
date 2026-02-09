@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
 
 export function ShoppingList() {
-  const { shoppingList, generateShoppingList, toggleShoppingItem, clearShoppingList, mealPlan } = useRecipes();
+  const { shoppingList, generateShoppingList, toggleShoppingItem, clearShoppingList, mealPlan, removeFromShoppingList } = useRecipes();
   const [filterCategory, setFilterCategory] = useState('all');
 
   const hasMealsPlanned = useMemo(() => {
@@ -37,6 +37,22 @@ export function ShoppingList() {
     if (shoppingList.length === 0) return 0;
     const checked = shoppingList.filter(item => item.checked).length;
     return Math.round((checked / shoppingList.length) * 100);
+  }, [shoppingList]);
+
+  const recipeProgress = useMemo(() => {
+    const recipeMap = {};
+    shoppingList.forEach(item => {
+      if (item.recipes && item.recipes.length > 0) {
+        item.recipes.forEach(recipe => {
+          if (!recipeMap[recipe.id]) {
+            recipeMap[recipe.id] = { id: recipe.id, name: recipe.name, total: 0, checked: 0 };
+          }
+          recipeMap[recipe.id].total += 1;
+          if (item.checked) recipeMap[recipe.id].checked += 1;
+        });
+      }
+    });
+    return Object.values(recipeMap);
   }, [shoppingList]);
 
   const categoryIcons = {
@@ -101,7 +117,7 @@ export function ShoppingList() {
             Shopping List
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {shoppingList.length} items from your meal plan
+            {shoppingList.length} items
           </p>
         </div>
         <div className="flex gap-2">
@@ -146,6 +162,63 @@ export function ShoppingList() {
           />
         </div>
       </div>
+
+      {/* Recipe Progress */}
+      {recipeProgress.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            Recipe Progress
+          </h3>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {recipeProgress.map(rp => {
+              const isComplete = rp.checked === rp.total;
+              const pct = rp.total > 0 ? Math.round((rp.checked / rp.total) * 100) : 0;
+              return (
+                <motion.div
+                  key={rp.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`p-3 rounded-xl border ${
+                    isComplete
+                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                      : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className={`text-sm font-semibold truncate mr-2 ${
+                      isComplete ? 'text-green-700 dark:text-green-300' : 'text-gray-900 dark:text-white'
+                    }`}>
+                      {isComplete && (
+                        <svg className="w-4 h-4 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                      {rp.name}
+                    </span>
+                    <span className={`text-xs font-medium whitespace-nowrap ${
+                      isComplete ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {rp.checked}/{rp.total}
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                      className={`h-full rounded-full ${
+                        isComplete
+                          ? 'bg-green-500'
+                          : 'bg-brand-500'
+                      }`}
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Category Filter */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -224,6 +297,18 @@ export function ShoppingList() {
                       }`}>
                         {item.name}
                       </p>
+                      {item.recipes && item.recipes.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {item.recipes.map(r => (
+                            <span
+                              key={r.id}
+                              className="inline-block px-1.5 py-0.5 text-[10px] font-medium rounded bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300"
+                            >
+                              {r.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <span className={`text-sm transition-colors ${
                       item.checked

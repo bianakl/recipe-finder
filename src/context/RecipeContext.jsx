@@ -205,11 +205,15 @@ export function RecipeProvider({ children }) {
                   ingredients[key] = {
                     name: ingredient.trim(),
                     measures: [],
-                    checked: false
+                    checked: false,
+                    recipes: []
                   };
                 }
                 if (measure && measure.trim()) {
                   ingredients[key].measures.push(measure.trim());
+                }
+                if (!ingredients[key].recipes.some(r => r.id === recipeId)) {
+                  ingredients[key].recipes.push({ id: recipeId, name: recipe.strMeal });
                 }
               }
             }
@@ -228,6 +232,52 @@ export function RecipeProvider({ children }) {
     setShoppingList(list);
     return list;
   }, [mealPlan, setShoppingList]);
+
+  const addToShoppingList = useCallback((ingredient, measure, recipeId, recipeName) => {
+    setShoppingList(prev => {
+      const prevList = Array.isArray(prev) ? prev : [];
+      const key = ingredient.toLowerCase().trim();
+      const existingIndex = prevList.findIndex(item => item.name.toLowerCase().trim() === key);
+
+      if (existingIndex >= 0) {
+        // Deduplicate: merge recipe source
+        const existing = prevList[existingIndex];
+        const recipes = existing.recipes || [];
+        const hasRecipe = recipeId && recipes.some(r => r.id === recipeId);
+        const updatedRecipes = recipeId && !hasRecipe
+          ? [...recipes, { id: recipeId, name: recipeName }]
+          : recipes;
+        const updatedMeasures = measure
+          ? [...(existing.measures || []), measure]
+          : existing.measures || [];
+        const updated = {
+          ...existing,
+          measures: updatedMeasures,
+          quantity: updatedMeasures.length > 0 ? updatedMeasures.join(' + ') : '1',
+          recipes: updatedRecipes,
+        };
+        const newList = [...prevList];
+        newList[existingIndex] = updated;
+        return newList;
+      }
+
+      // New item
+      const newItem = {
+        id: Date.now().toString(),
+        name: ingredient.trim(),
+        measures: measure ? [measure] : [],
+        quantity: measure || '1',
+        category: categorizeIngredient(ingredient.trim()),
+        checked: false,
+        recipes: recipeId ? [{ id: recipeId, name: recipeName }] : [],
+      };
+      return [...prevList, newItem];
+    });
+  }, [setShoppingList]);
+
+  const removeFromShoppingList = useCallback((itemId) => {
+    setShoppingList(prev => (prev || []).filter(item => item.id !== itemId));
+  }, [setShoppingList]);
 
   const toggleShoppingItem = useCallback((itemId) => {
     setShoppingList(prev =>
@@ -301,6 +351,8 @@ export function RecipeProvider({ children }) {
       generateShoppingList,
       toggleShoppingItem,
       clearShoppingList,
+      addToShoppingList,
+      removeFromShoppingList,
       pantry: safePantry,
       addToPantry,
       removeFromPantry,
@@ -314,7 +366,7 @@ export function RecipeProvider({ children }) {
   );
 }
 
-function categorizeIngredient(name) {
+export function categorizeIngredient(name) {
   const lower = name.toLowerCase();
   if (/chicken|beef|pork|lamb|fish|salmon|shrimp|bacon|sausage|meat/.test(lower)) return 'Meat & Seafood';
   if (/milk|cheese|cream|yogurt|butter|egg/.test(lower)) return 'Dairy & Eggs';

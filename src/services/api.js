@@ -1028,11 +1028,19 @@ export async function searchRecipes(query, filters = {}) {
   }
 }
 
+// Bidirectional substring match: checks if an ingredient name matches any pantry item
+export function ingredientMatchesPantry(ingredientName, pantryItems) {
+  if (!ingredientName || !pantryItems || !pantryItems.length) return false;
+  const lowerIng = ingredientName.toLowerCase().trim();
+  return pantryItems.some(pantryItem => {
+    const lowerPantry = pantryItem.toLowerCase().trim();
+    return lowerIng.includes(lowerPantry) || lowerPantry.includes(lowerIng);
+  });
+}
+
 // Smart pantry search - returns recipes ranked by ingredient match percentage
 export function searchByPantry(pantryItems) {
   if (!pantryItems || !pantryItems.length) return [];
-
-  const lowerPantry = pantryItems.map(i => i.toLowerCase().trim());
 
   const results = MOCK_RECIPES.map(recipe => {
     // Extract all recipe ingredients
@@ -1049,11 +1057,7 @@ export function searchByPantry(pantryItems) {
     const missing = [];
 
     recipeIngredients.forEach(recipeIng => {
-      const lowerRecipeIng = recipeIng.toLowerCase();
-      const hasMatch = lowerPantry.some(pantryItem =>
-        lowerRecipeIng.includes(pantryItem) || pantryItem.includes(lowerRecipeIng)
-      );
-      if (hasMatch) {
+      if (ingredientMatchesPantry(recipeIng, pantryItems)) {
         matched.push(recipeIng);
       } else {
         missing.push(recipeIng);

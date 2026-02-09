@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
 import { useSettings, convertMeasurement } from '../hooks/useSettings.jsx';
-import { getRecipeById, parseIngredients, scaleIngredients } from '../services/api';
+import { getRecipeById, parseIngredients, scaleIngredients, ingredientMatchesPantry } from '../services/api';
 import { StarRating } from './StarRating';
 
 export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
@@ -31,7 +31,10 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
     setRecipeNote,
     getRecipeRating,
     setRecipeRating,
-    getRecipeById: getRecipeFromContext
+    getRecipeById: getRecipeFromContext,
+    pantry,
+    addToPantry,
+    addToShoppingList,
   } = useRecipes();
 
   // Check if a slot is occupied by another recipe
@@ -76,6 +79,15 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   const originalServings = fullRecipe?.servings || 4;
   const rawIngredients = fullRecipe ? parseIngredients(fullRecipe) : [];
   const ingredients = scaleIngredients(rawIngredients, originalServings, servings);
+
+  const hasPantry = pantry && pantry.length > 0;
+  const classifiedIngredients = ingredients.map(item => ({
+    ...item,
+    inPantry: hasPantry ? ingredientMatchesPantry(item.ingredient, pantry) : false,
+  }));
+  const inPantryCount = classifiedIngredients.filter(i => i.inPantry).length;
+  const missingCount = classifiedIngredients.length - inPantryCount;
+  const missingIngredients = classifiedIngredients.filter(i => !i.inPantry);
 
   const handleSave = () => {
     if (isSaved) {
@@ -438,8 +450,40 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                         </div>
                       </div>
 
+                      {/* Pantry Match Summary */}
+                      {hasPantry && classifiedIngredients.length > 0 && (
+                        <div className="p-3 rounded-xl bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 mb-2">
+                          <p className="text-sm font-medium text-brand-700 dark:text-brand-300">
+                            You have {inPantryCount}/{classifiedIngredients.length} ingredients
+                            {missingCount > 0 && (
+                              <span className="text-gray-500 dark:text-gray-400"> ({missingCount} to buy)</span>
+                            )}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Add All Missing Button */}
+                      {hasPantry && missingCount > 0 && (
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            missingIngredients.forEach(item => {
+                              const convertedMeasure = convertMeasurement(item.measure, currentUnit);
+                              addToShoppingList(item.ingredient, convertedMeasure, recipe.idMeal, recipe.strMeal);
+                            });
+                          }}
+                          className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 hover:bg-brand-200 dark:hover:bg-brand-900/50 transition-colors flex items-center justify-center gap-2 mb-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          Add all {missingCount} missing to shopping list
+                        </motion.button>
+                      )}
+
                       <ul className="grid gap-3">
-                        {ingredients.map((item, i) => {
+                        {classifiedIngredients.map((item, i) => {
                           const convertedMeasure = convertMeasurement(item.measure, currentUnit);
                           return (
                             <motion.li
@@ -447,12 +491,51 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                               initial={{ opacity: 0, x: -20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.03 }}
-                              className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50"
+                              className={`flex items-center gap-4 p-3 rounded-xl ${
+                                hasPantry && item.inPantry
+                                  ? 'bg-green-50 dark:bg-green-900/20'
+                                  : 'bg-gray-50 dark:bg-gray-800/50'
+                              }`}
                             >
-                              <span className="w-2 h-2 rounded-full bg-gradient-to-r from-brand-500 to-pink-500" />
-                              <span className="text-gray-700 dark:text-gray-300">
+                              <span className={`w-2 h-2 rounded-full ${
+                                hasPantry && item.inPantry
+                                  ? 'bg-green-500'
+                                  : 'bg-gradient-to-r from-brand-500 to-pink-500'
+                              }`} />
+                              <span className="text-gray-700 dark:text-gray-300 flex-1">
                                 <span className="font-semibold text-gray-900 dark:text-white">{convertedMeasure}</span> {item.ingredient}
                               </span>
+                              {hasPantry && item.inPantry && (
+                                <span className="text-xs font-medium text-green-600 dark:text-green-400 whitespace-nowrap">
+                                  In pantry
+                                </span>
+                              )}
+                              {hasPantry && !item.inPantry && (
+                                <div className="flex items-center gap-1.5">
+                                  <motion.button
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() => addToPantry(item.ingredient)}
+                                    title="I have this"
+                                    className="w-7 h-7 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 flex items-center justify-center transition-colors"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  </motion.button>
+                                  <motion.button
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() => addToShoppingList(item.ingredient, convertedMeasure, recipe.idMeal, recipe.strMeal)}
+                                    title="Add to shopping list"
+                                    className="w-7 h-7 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-200 dark:hover:bg-brand-900/50 flex items-center justify-center transition-colors"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                  </motion.button>
+                                </div>
+                              )}
                             </motion.li>
                           );
                         })}
