@@ -1028,25 +1028,6 @@ export async function searchRecipes(query, filters = {}) {
   }
 }
 
-export async function searchByIngredients(ingredients) {
-  if (!ingredients.length) return [];
-
-  const lowerIngredients = ingredients.map(i => i.toLowerCase().trim());
-
-  return MOCK_RECIPES.filter(recipe => {
-    const recipeIngredients = [];
-    for (let i = 1; i <= 20; i++) {
-      const ing = recipe[`strIngredient${i}`];
-      if (ing && ing.trim()) {
-        recipeIngredients.push(ing.toLowerCase());
-      }
-    }
-    return lowerIngredients.some(searchIng =>
-      recipeIngredients.some(recipeIng => recipeIng.includes(searchIng))
-    );
-  });
-}
-
 // Smart pantry search - returns recipes ranked by ingredient match percentage
 export function searchByPantry(pantryItems) {
   if (!pantryItems || !pantryItems.length) return [];

@@ -19,11 +19,11 @@ const WALKTHROUGH_STEPS = [
     arrow: 'top'
   },
   {
-    id: 'fridge',
-    title: "What's in Your Fridge?",
-    description: 'Got random ingredients? Click here to find recipes you can make with what you have!',
-    icon: '🧊',
-    target: '[data-tour="fridge"]',
+    id: 'pantry',
+    title: "My Pantry",
+    description: "Add the ingredients you have at home. We'll find recipes that match and show you what you can cook.",
+    icon: '🫙',
+    target: '[data-tour="pantry"]',
     position: 'bottom',
     arrow: 'top'
   },

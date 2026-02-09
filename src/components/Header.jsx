@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchBar } from './SearchBar';
 
-export function Header({ searchQuery, onSearchChange, isLoading, onIngredientSearch }) {
+export function Header({ searchQuery, onSearchChange, isLoading, onPantryClick }) {
   return (
     <header className="sticky top-0 z-40 glass-strong">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,19 +32,14 @@ export function Header({ searchQuery, onSearchChange, isLoading, onIngredientSea
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={onIngredientSearch}
-              data-tour="fridge"
-              className="shrink-0 px-4 py-3 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium flex items-center gap-2 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors group relative"
-              title="Find recipes by what's in your fridge"
+              onClick={onPantryClick}
+              data-tour="pantry"
+              className="shrink-0 px-4 py-3 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium flex items-center gap-2 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+              title="Open My Pantry"
             >
-              <span>🧊</span>
-              <span className="hidden lg:inline">What's in my fridge?</span>
-              <span className="lg:hidden">Fridge</span>
-              {/* Tooltip for clarity */}
-              <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">
-                Find recipes with ingredients you have
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
-              </div>
+              <span>🫙</span>
+              <span className="hidden lg:inline">My Pantry</span>
+              <span className="lg:hidden">Pantry</span>
             </motion.button>
           </div>
 
@@ -61,12 +56,12 @@ export function Header({ searchQuery, onSearchChange, isLoading, onIngredientSea
           </div>
           <motion.button
             whileTap={{ scale: 0.95 }}
-            onClick={onIngredientSearch}
-            data-tour="fridge-mobile"
+            onClick={onPantryClick}
+            data-tour="pantry-mobile"
             className="shrink-0 w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 flex items-center justify-center"
-            title="Find recipes by ingredients"
+            title="Open My Pantry"
           >
-            <span className="text-xl">🧊</span>
+            <span className="text-xl">🫙</span>
           </motion.button>
         </div>
       </div>

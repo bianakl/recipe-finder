@@ -9,7 +9,6 @@ import { ShoppingList } from './components/ShoppingList';
 import { NutritionDashboard } from './components/NutritionDashboard';
 import { CookingHistory } from './components/CookingHistory';
 import { MealSuggestions } from './components/MealSuggestions';
-import { IngredientSearch } from './components/IngredientSearch';
 import { IngredientsExplorer } from './components/IngredientsExplorer';
 import { MyPantry } from './components/MyPantry';
 import { DataManager } from './components/DataManager';
@@ -24,7 +23,7 @@ import { filterRecipes } from './services/api';
 
 const tabs = [
   { id: 'search', label: 'Discover', icon: '✨' },
-  { id: 'pantry', label: 'My Pantry', icon: '🧊' },
+  { id: 'pantry', label: 'My Pantry', icon: '🫙' },
   { id: 'saved', label: 'Saved', icon: '💜' },
   { id: 'planner', label: 'Meal Plan', icon: '📅' },
   { id: 'shopping', label: 'Shopping', icon: '🛒' },
@@ -40,8 +39,6 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [activeTab, setActiveTab] = useState('search');
-  const [showIngredientSearch, setShowIngredientSearch] = useState(false);
-  const [ingredientResults, setIngredientResults] = useState(null);
   const [filters, setFilters] = useState({ dietary: [], cookTime: null, cuisine: null });
   const [showWalkthrough, setShowWalkthrough] = useState(false);
 
@@ -74,22 +71,13 @@ function App() {
   // Back button support for recipe drawer
   useBackButton(!!selectedRecipe, handleCloseDrawer, 'recipeDrawer');
 
-  // Back button support for ingredient search modal
-  useBackButton(showIngredientSearch, () => setShowIngredientSearch(false), 'ingredientSearch');
-
   // Apply filters to search results
   const filteredResults = filterRecipes(results, filters);
 
   const handleTagClick = (type, value) => {
     setSelectedRecipe(null);
-    setIngredientResults(null);
     setSearchQuery(value);
     setActiveTab('search');
-  };
-
-  const handleIngredientResults = (recipes, ingredients) => {
-    setIngredientResults({ recipes, ingredients });
-    setShowIngredientSearch(false);
   };
 
   const clearFilters = () => {
@@ -104,7 +92,7 @@ function App() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         isLoading={isLoading}
-        onIngredientSearch={() => setActiveTab('pantry')}
+        onPantryClick={() => setActiveTab('pantry')}
       />
 
       <nav className="sticky top-20 sm:top-20 z-30 glass" data-tour="tabs">
@@ -149,32 +137,8 @@ function App() {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              {/* Ingredient search results banner */}
-              {ingredientResults && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl flex items-center justify-between"
-                >
-                  <div>
-                    <p className="font-medium text-green-800 dark:text-green-200">
-                      Showing recipes with: {ingredientResults.ingredients.join(', ')}
-                    </p>
-                    <p className="text-sm text-green-600 dark:text-green-400">
-                      {ingredientResults.recipes.length} recipes found
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setIngredientResults(null)}
-                    className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200 font-medium"
-                  >
-                    Clear
-                  </button>
-                </motion.div>
-              )}
-
               {/* Filters */}
-              {(hasSearched || ingredientResults) && (
+              {hasSearched && (
                 <FilterBar
                   filters={filters}
                   onFilterChange={setFilters}
@@ -194,22 +158,15 @@ function App() {
 
               {isLoading && <SkeletonGrid count={6} />}
 
-              {!isLoading && !hasSearched && !ingredientResults && (
+              {!isLoading && !hasSearched && (
                 <EmptyState type="search" />
               )}
 
-              {!isLoading && hasSearched && filteredResults.length === 0 && !ingredientResults && (
+              {!isLoading && hasSearched && filteredResults.length === 0 && (
                 <EmptyState type="noResults" />
               )}
 
-              {!isLoading && ingredientResults && (
-                <RecipeGrid
-                  recipes={filterRecipes(ingredientResults.recipes, filters)}
-                  onRecipeClick={handleRecipeClick}
-                />
-              )}
-
-              {!isLoading && filteredResults.length > 0 && !ingredientResults && (
+              {!isLoading && filteredResults.length > 0 && (
                 <RecipeGrid recipes={filteredResults} onRecipeClick={handleRecipeClick} />
               )}
             </motion.div>
@@ -356,15 +313,6 @@ function App() {
         onClose={handleCloseDrawer}
         onTagClick={handleTagClick}
       />
-
-      <AnimatePresence>
-        {showIngredientSearch && (
-          <IngredientSearch
-            onResults={handleIngredientResults}
-            onClose={() => setShowIngredientSearch(false)}
-          />
-        )}
-      </AnimatePresence>
 
       {/* First-time user walkthrough */}
       <AnimatePresence>

@@ -56,11 +56,11 @@ export function MyPantry({ onRecipeClick }) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <span className="text-3xl">🧊</span>
+            <span className="text-3xl">🫙</span>
             My Pantry
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            Add ingredients you have and discover what you can make
+            Add what you have on hand — we'll find recipes you can make
           </p>
         </div>
         {pantry.length > 0 && (
@@ -266,12 +266,12 @@ export function MyPantry({ onRecipeClick }) {
         </div>
       ) : (
         <div className="text-center py-16 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-100 dark:border-green-800/30">
-          <span className="text-6xl mb-4 block">🥗</span>
+          <span className="text-6xl mb-4 block">🫙</span>
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            What's in your fridge?
+            Your pantry is empty
           </h3>
           <p className="text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
-            Add the ingredients you have at home and we'll show you recipes you can make right now.
+            Start adding ingredients you have at home. We'll match them to recipes and show you what you can cook.
           </p>
         </div>
       )}
