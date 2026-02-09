@@ -464,22 +464,21 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
 
                       {/* Add All Missing Button */}
                       {hasPantry && missingCount > 0 && (
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => {
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
                             missingIngredients.forEach(item => {
                               const convertedMeasure = convertMeasurement(item.measure, currentUnit);
                               addToShoppingList(item.ingredient, convertedMeasure, recipe.idMeal, recipe.strMeal);
                             });
                           }}
-                          className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 hover:bg-brand-200 dark:hover:bg-brand-900/50 transition-colors flex items-center justify-center gap-2 mb-2"
+                          className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 hover:bg-brand-200 dark:hover:bg-brand-900/50 active:bg-brand-300 dark:active:bg-brand-800/50 transition-colors flex items-center justify-center gap-2 mb-2"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                           </svg>
                           Add all {missingCount} missing to shopping list
-                        </motion.button>
+                        </button>
                       )}
 
                       <ul className="grid gap-3">
@@ -511,29 +510,33 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                                 </span>
                               )}
                               {hasPantry && !item.inPantry && (
-                                <div className="flex items-center gap-1.5">
-                                  <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => addToPantry(item.ingredient)}
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                      addToPantry(item.ingredient);
+                                    }}
                                     title="I have this"
-                                    className="w-7 h-7 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 flex items-center justify-center transition-colors"
+                                    className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 active:bg-green-300 dark:active:bg-green-800/50 flex items-center justify-center transition-colors"
                                   >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                     </svg>
-                                  </motion.button>
-                                  <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => addToShoppingList(item.ingredient, convertedMeasure, recipe.idMeal, recipe.strMeal)}
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                      addToShoppingList(item.ingredient, convertedMeasure, recipe.idMeal, recipe.strMeal);
+                                    }}
                                     title="Add to shopping list"
-                                    className="w-7 h-7 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-200 dark:hover:bg-brand-900/50 flex items-center justify-center transition-colors"
+                                    className="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-200 dark:hover:bg-brand-900/50 active:bg-brand-300 dark:active:bg-brand-800/50 flex items-center justify-center transition-colors"
                                   >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                  </motion.button>
+                                  </button>
                                 </div>
                               )}
                             </motion.li>
