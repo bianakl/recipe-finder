@@ -14,6 +14,8 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   const [note, setNote] = useState('');
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [unitOverride, setUnitOverride] = useState(null); // null means use global setting
+  const [localPantryAdds, setLocalPantryAdds] = useState(new Set());
+  const [localShoppingAdds, setLocalShoppingAdds] = useState(new Set());
 
   const { settings } = useSettings();
   const currentUnit = unitOverride || settings.measurementSystem;
@@ -54,6 +56,8 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
     if (recipe && isOpen) {
       setIsLoading(true);
       setServings(4);
+      setLocalPantryAdds(new Set());
+      setLocalShoppingAdds(new Set());
       getRecipeById(recipe.idMeal)
         .then(setFullRecipe)
         .finally(() => setIsLoading(false));
@@ -80,10 +84,11 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   const rawIngredients = fullRecipe ? parseIngredients(fullRecipe) : [];
   const ingredients = scaleIngredients(rawIngredients, originalServings, servings);
 
-  const hasPantry = pantry && pantry.length > 0;
+  const hasPantry = (pantry && pantry.length > 0) || localPantryAdds.size > 0;
   const classifiedIngredients = ingredients.map(item => ({
     ...item,
-    inPantry: hasPantry ? ingredientMatchesPantry(item.ingredient, pantry) : false,
+    inPantry: ingredientMatchesPantry(item.ingredient, pantry) || localPantryAdds.has(item.ingredient.toLowerCase()),
+    addedToList: localShoppingAdds.has(item.ingredient.toLowerCase()),
   }));
   const inPantryCount = classifiedIngredients.filter(i => i.inPantry).length;
   const missingCount = classifiedIngredients.length - inPantryCount;
@@ -467,10 +472,13 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
+                            const newAdds = new Set(localShoppingAdds);
                             missingIngredients.forEach(item => {
                               const convertedMeasure = convertMeasurement(item.measure, currentUnit);
                               addToShoppingList(item.ingredient, convertedMeasure, recipe.idMeal, recipe.strMeal);
+                              newAdds.add(item.ingredient.toLowerCase());
                             });
+                            setLocalShoppingAdds(newAdds);
                           }}
                           className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 hover:bg-brand-200 dark:hover:bg-brand-900/50 active:bg-brand-300 dark:active:bg-brand-800/50 transition-colors flex items-center justify-center gap-2 mb-2"
                         >
@@ -509,13 +517,14 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                                   In pantry
                                 </span>
                               )}
-                              {hasPantry && !item.inPantry && (
+                              {hasPantry && !item.inPantry && !item.addedToList && (
                                 <div className="flex items-center gap-2 shrink-0">
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       e.preventDefault();
                                       addToPantry(item.ingredient);
+                                      setLocalPantryAdds(prev => new Set([...prev, item.ingredient.toLowerCase()]));
                                     }}
                                     title="I have this"
                                     className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 active:bg-green-300 dark:active:bg-green-800/50 flex items-center justify-center transition-colors"
@@ -529,6 +538,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                                       e.stopPropagation();
                                       e.preventDefault();
                                       addToShoppingList(item.ingredient, convertedMeasure, recipe.idMeal, recipe.strMeal);
+                                      setLocalShoppingAdds(prev => new Set([...prev, item.ingredient.toLowerCase()]));
                                     }}
                                     title="Add to shopping list"
                                     className="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 hover:bg-brand-200 dark:hover:bg-brand-900/50 active:bg-brand-300 dark:active:bg-brand-800/50 flex items-center justify-center transition-colors"
@@ -538,6 +548,11 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                                     </svg>
                                   </button>
                                 </div>
+                              )}
+                              {item.addedToList && !item.inPantry && (
+                                <span className="text-xs font-medium text-brand-600 dark:text-brand-400 whitespace-nowrap">
+                                  Added to list
+                                </span>
                               )}
                             </motion.li>
                           );
