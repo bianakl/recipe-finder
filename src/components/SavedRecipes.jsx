@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
+import { usePremium } from '../hooks/usePremium';
 import { EmptyState } from './EmptyState';
 
 export function SavedRecipes({ onRecipeClick }) {
   const { savedRecipes, unsaveRecipe } = useRecipes();
+  const { isPremium, FREE_SAVE_LIMIT, savedCount } = usePremium();
 
   if (savedRecipes.length === 0) {
     return <EmptyState type="savedEmpty" />;
@@ -24,9 +26,16 @@ export function SavedRecipes({ onRecipeClick }) {
             Your favorite recipes in one place
           </p>
         </div>
-        <span className="px-4 py-2 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 font-bold text-sm">
-          {savedRecipes.length} saved
-        </span>
+        <div className="flex items-center gap-2">
+          {!isPremium && (
+            <span className="px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold text-xs">
+              {savedCount}/{FREE_SAVE_LIMIT} free
+            </span>
+          )}
+          <span className="px-4 py-2 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 font-bold text-sm">
+            {savedRecipes.length} saved
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

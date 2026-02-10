@@ -17,6 +17,13 @@ import { FilterBar } from './components/FilterBar';
 import { EmptyState } from './components/EmptyState';
 import { SkeletonGrid } from './components/SkeletonCard';
 import { Walkthrough, ExploreButton } from './components/Walkthrough';
+import { AuthModal } from './components/AuthModal';
+import { ConsentBanner } from './components/ConsentBanner';
+import { PremiumGate } from './components/PremiumGate';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
+import { useAuth } from './context/AuthContext';
+import { useRecipes } from './context/RecipeContext';
+import { usePremium } from './hooks/usePremium';
 import { useRecipeSearch } from './hooks/useRecipeSearch';
 import { useTabHistory, useBackButton } from './hooks/useBackButton';
 import { filterRecipes } from './services/api';
@@ -41,6 +48,12 @@ function App() {
   const [activeTab, setActiveTab] = useState('search');
   const [filters, setFilters] = useState({ dietary: [], cookTime: null, cuisine: null });
   const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const { showAuthModal, setShowAuthModal } = useAuth();
+  const { syncStatus } = useRecipes();
+  const { isPremium, canAccessFeature } = usePremium();
+
+  const PREMIUM_TABS = new Set(['pantry', 'planner', 'shopping', 'nutrition']);
 
   // Check if first-time user
   useEffect(() => {
@@ -93,6 +106,7 @@ function App() {
         onSearchChange={setSearchQuery}
         isLoading={isLoading}
         onPantryClick={() => setActiveTab('pantry')}
+        syncStatus={syncStatus}
       />
 
       <nav className="sticky top-20 sm:top-20 z-30 glass" data-tour="tabs">
@@ -101,7 +115,7 @@ function App() {
             {tabs.map((tab) => (
               <motion.button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => { setActiveTab(tab.id); setShowPrivacyPolicy(false); }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 data-tour={`${tab.id}-tab`}
@@ -120,6 +134,11 @@ function App() {
                 )}
                 <span className="relative">{tab.icon}</span>
                 <span className="relative hidden sm:inline">{tab.label}</span>
+                {!isPremium && PREMIUM_TABS.has(tab.id) && (
+                  <span className="relative text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">
+                    PRO
+                  </span>
+                )}
               </motion.button>
             ))}
           </div>
@@ -180,7 +199,9 @@ function App() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <MyPantry onRecipeClick={handleRecipeClick} />
+              <PremiumGate featureId="pantry">
+                <MyPantry onRecipeClick={handleRecipeClick} />
+              </PremiumGate>
             </motion.div>
           )}
 
@@ -204,7 +225,9 @@ function App() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <MealPlanner onRecipeClick={handleRecipeClick} />
+              <PremiumGate featureId="planner">
+                <MealPlanner onRecipeClick={handleRecipeClick} />
+              </PremiumGate>
             </motion.div>
           )}
 
@@ -216,7 +239,9 @@ function App() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <ShoppingList />
+              <PremiumGate featureId="shopping">
+                <ShoppingList />
+              </PremiumGate>
             </motion.div>
           )}
 
@@ -228,7 +253,9 @@ function App() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <NutritionDashboard />
+              <PremiumGate featureId="nutrition">
+                <NutritionDashboard />
+              </PremiumGate>
             </motion.div>
           )}
 
@@ -288,7 +315,11 @@ function App() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <Settings />
+              {showPrivacyPolicy ? (
+                <PrivacyPolicy onBack={() => setShowPrivacyPolicy(false)} />
+              ) : (
+                <Settings onShowPrivacyPolicy={() => setShowPrivacyPolicy(true)} />
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -320,6 +351,15 @@ function App() {
           <Walkthrough onComplete={handleWalkthroughComplete} />
         )}
       </AnimatePresence>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
+
+      {/* Consent Banner */}
+      <ConsentBanner />
     </div>
   );
 }

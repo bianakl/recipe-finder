@@ -1,8 +1,18 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSettings } from '../hooks/useSettings';
+import { useAuth } from '../context/AuthContext';
+import { openCustomerPortal } from '../lib/stripe';
+import { PricingModal } from './PricingModal';
+import { ConsentManager } from './ConsentManager';
+import { DeleteAccountModal } from './DeleteAccountModal';
 
-export function Settings() {
+export function Settings({ onShowPrivacyPolicy }) {
   const { settings, updateSetting, resetSettings } = useSettings();
+  const { user, profile, isPremium, signOut, setShowAuthModal } = useAuth();
+  const [showPricing, setShowPricing] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [showDeleteAccount, setShowDeleteAccount] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -24,6 +34,84 @@ export function Settings() {
         <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
           Customize your recipe experience
         </p>
+      </div>
+
+      {/* Account Section */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <h3 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+          <span>👤</span> Account
+        </h3>
+        {user ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-xl object-cover" />
+              ) : (
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                  {(profile?.display_name || user.email)?.[0]?.toUpperCase()}
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900 dark:text-white truncate">
+                  {profile?.display_name || user.email?.split('@')[0]}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Subscription</span>
+              <span className={`text-sm font-bold px-2.5 py-1 rounded-full ${isPremium ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}>
+                {isPremium ? 'Premium' : 'Free'}
+              </span>
+            </div>
+            {isPremium ? (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={async () => {
+                  setPortalLoading(true);
+                  try { await openCustomerPortal(); } catch (err) { console.warn(err); }
+                  setPortalLoading(false);
+                }}
+                disabled={portalLoading}
+                className="w-full py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+              >
+                {portalLoading ? 'Opening...' : 'Manage Subscription'}
+              </motion.button>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowPricing(true)}
+                className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-500/25"
+              >
+                Upgrade to Premium
+              </motion.button>
+            )}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={signOut}
+              className="w-full py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold rounded-xl border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+            >
+              Sign Out
+            </motion.button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Sign in to sync your data across devices and unlock premium features.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setShowAuthModal(true)}
+              className="w-full py-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold rounded-xl shadow-lg shadow-brand-500/25"
+            >
+              Sign In / Sign Up
+            </motion.button>
+          </div>
+        )}
       </div>
 
       {/* Measurement System */}
@@ -171,6 +259,45 @@ export function Settings() {
         </motion.button>
       </div>
 
+      {/* Privacy & Data */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <span>🔒</span> Privacy & Data
+        </h3>
+
+        <div className="space-y-3">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onShowPrivacyPolicy}
+            className="w-full py-3 px-4 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-xl text-left flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <span>Privacy Policy</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </motion.button>
+
+          {user && (
+            <>
+              <div className="pt-2">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Consent Preferences</p>
+                <ConsentManager />
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowDeleteAccount(true)}
+                className="w-full py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold rounded-xl border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+              >
+                Delete My Account
+              </motion.button>
+            </>
+          )}
+        </div>
+      </div>
+
       {/* Info Box */}
       <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
         <h3 className="font-bold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
@@ -180,6 +307,9 @@ export function Settings() {
           You can also toggle between measurement systems directly in any recipe by clicking the unit toggle button in the ingredients section.
         </p>
       </div>
+
+      <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} />
+      <DeleteAccountModal isOpen={showDeleteAccount} onClose={() => setShowDeleteAccount(false)} />
     </div>
   );
 }

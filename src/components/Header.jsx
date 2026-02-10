@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchBar } from './SearchBar';
+import { UserMenu } from './UserMenu';
+import { SyncStatusIndicator } from './SyncStatusIndicator';
 
-export function Header({ searchQuery, onSearchChange, isLoading, onPantryClick }) {
+export function Header({ searchQuery, onSearchChange, isLoading, onPantryClick, syncStatus }) {
   return (
     <header className="sticky top-0 z-40 glass-strong">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,7 +45,9 @@ export function Header({ searchQuery, onSearchChange, isLoading, onPantryClick }
             </motion.button>
           </div>
 
+          <SyncStatusIndicator status={syncStatus} />
           <ThemeToggle />
+          <UserMenu />
         </div>
 
         <div className="sm:hidden pb-4 flex gap-2">

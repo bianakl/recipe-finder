@@ -1,20 +1,28 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
+import { usePremium } from '../hooks/usePremium';
+import { PricingModal } from './PricingModal';
 
 export function RecipeCard({ recipe, onClick, index = 0 }) {
   const { isRecipeSaved, saveRecipe, unsaveRecipe } = useRecipes();
+  const { canSaveRecipe } = usePremium();
+  const [showPricing, setShowPricing] = useState(false);
   const isSaved = isRecipeSaved(recipe.idMeal);
 
   const handleSaveClick = (e) => {
     e.stopPropagation();
     if (isSaved) {
       unsaveRecipe(recipe.idMeal);
+    } else if (!canSaveRecipe()) {
+      setShowPricing(true);
     } else {
       saveRecipe(recipe);
     }
   };
 
   return (
+    <>
     <motion.article
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
@@ -86,5 +94,7 @@ export function RecipeCard({ recipe, onClick, index = 0 }) {
         </div>
       </div>
     </motion.article>
+    <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} />
+    </>
   );
 }

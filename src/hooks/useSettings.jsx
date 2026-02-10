@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useSupabaseSync } from './useSupabaseSync';
 
 const SETTINGS_KEY = 'recipe-finder-settings';
 
@@ -26,6 +28,16 @@ export function SettingsProvider({ children }) {
   useEffect(() => {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   }, [settings]);
+
+  // Sync settings to Supabase
+  const { user } = useAuth();
+  const { canSync, syncSettings } = useSupabaseSync(user?.id || null);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) { isInitialMount.current = false; return; }
+    if (canSync) syncSettings(settings);
+  }, [settings]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateSetting = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));

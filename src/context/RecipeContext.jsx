@@ -1,5 +1,7 @@
-import { createContext, useContext, useCallback, useMemo } from 'react';
+import { createContext, useContext, useCallback, useMemo, useEffect, useState, useRef } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAuth } from './AuthContext';
+import { useSupabaseSync } from '../hooks/useSupabaseSync';
 import { MOCK_RECIPES } from '../services/api';
 
 const RecipeContext = createContext(null);
@@ -48,6 +50,131 @@ export function RecipeProvider({ children }) {
   const [pantry, setPantry] = useLocalStorage('pantry', []);
 
   const mealPlan = useMemo(() => validateMealPlan(rawMealPlan), [rawMealPlan]);
+
+  // Auth & Sync
+  const { user } = useAuth();
+  const userId = user?.id || null;
+  const {
+    syncStatus,
+    canSync,
+    pullAllFromRemote,
+    pushAllToRemote,
+    syncSavedRecipes,
+    syncMealPlan,
+    syncCookingHistory,
+    syncRecipeNotes,
+    syncRecipeRatings,
+    syncShoppingList,
+    syncPantry,
+  } = useSupabaseSync(userId);
+
+  const [isSyncing, setIsSyncing] = useState(false);
+  const hasInitialSynced = useRef(false);
+
+  // ---- First-login migration / pull on login ----
+  useEffect(() => {
+    if (!canSync || !userId || hasInitialSynced.current) return;
+    hasInitialSynced.current = true;
+
+    const doInitialSync = async () => {
+      setIsSyncing(true);
+      try {
+        const remoteData = await pullAllFromRemote();
+        if (!remoteData) {
+          setIsSyncing(false);
+          return;
+        }
+
+        const remoteHasData = (remoteData.savedRecipes?.length > 0) ||
+          (remoteData.cookingHistory?.length > 0) ||
+          (remoteData.pantry?.length > 0);
+
+        const localHasData = (savedRecipes?.length > 0) ||
+          (cookingHistory?.length > 0) ||
+          (pantry?.length > 0);
+
+        if (remoteHasData) {
+          // Remote has data — use remote as source of truth
+          setSavedRecipes(remoteData.savedRecipes);
+          setMealPlan(remoteData.mealPlan);
+          setCookingHistory(remoteData.cookingHistory);
+          setRecipeNotes(remoteData.recipeNotes);
+          setRecipeRatings(remoteData.recipeRatings);
+          setShoppingList(remoteData.shoppingList);
+          setPantry(remoteData.pantry);
+        } else if (localHasData && !remoteHasData) {
+          // First-time login migration: push local to remote
+          await pushAllToRemote({
+            savedRecipes,
+            mealPlan,
+            cookingHistory,
+            recipeNotes,
+            recipeRatings,
+            shoppingList,
+            pantry,
+          });
+        }
+      } catch (err) {
+        console.warn('Initial sync failed:', err.message);
+      } finally {
+        setIsSyncing(false);
+      }
+    };
+
+    doInitialSync();
+  }, [canSync, userId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset sync state on logout
+  useEffect(() => {
+    if (!userId) {
+      hasInitialSynced.current = false;
+    }
+  }, [userId]);
+
+  // ---- Sync on change (debounced) ----
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) { isInitialMount.current = false; return; }
+    if (canSync && !isSyncing) syncSavedRecipes(savedRecipes);
+  }, [savedRecipes]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const mealPlanRef = useRef(true);
+  useEffect(() => {
+    if (mealPlanRef.current) { mealPlanRef.current = false; return; }
+    if (canSync && !isSyncing) syncMealPlan(mealPlan);
+  }, [mealPlan]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const historyRef = useRef(true);
+  useEffect(() => {
+    if (historyRef.current) { historyRef.current = false; return; }
+    if (canSync && !isSyncing) syncCookingHistory(cookingHistory);
+  }, [cookingHistory]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const notesRef = useRef(true);
+  useEffect(() => {
+    if (notesRef.current) { notesRef.current = false; return; }
+    if (canSync && !isSyncing) syncRecipeNotes(recipeNotes);
+  }, [recipeNotes]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const ratingsRef = useRef(true);
+  useEffect(() => {
+    if (ratingsRef.current) { ratingsRef.current = false; return; }
+    if (canSync && !isSyncing) syncRecipeRatings(recipeRatings);
+  }, [recipeRatings]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const shoppingRef = useRef(true);
+  useEffect(() => {
+    if (shoppingRef.current) { shoppingRef.current = false; return; }
+    if (canSync && !isSyncing) syncShoppingList(shoppingList);
+  }, [shoppingList]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const pantryRef = useRef(true);
+  useEffect(() => {
+    if (pantryRef.current) { pantryRef.current = false; return; }
+    if (canSync && !isSyncing) syncPantry(pantry);
+  }, [pantry]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ---- All original functions unchanged ----
 
   const saveRecipe = useCallback((recipe) => {
     if (!recipe) return;
@@ -360,6 +487,8 @@ export function RecipeProvider({ children }) {
       isInPantry,
       DAYS,
       MEALS,
+      isSyncing,
+      syncStatus,
     }}>
       {children}
     </RecipeContext.Provider>

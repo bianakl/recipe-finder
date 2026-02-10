@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
+import { usePremium } from '../hooks/usePremium';
 import { useSettings, convertMeasurement } from '../hooks/useSettings.jsx';
 import { getRecipeById, parseIngredients, scaleIngredients, ingredientMatchesPantry } from '../services/api';
 import { StarRating } from './StarRating';
+import { PricingModal } from './PricingModal';
 
 export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   const [fullRecipe, setFullRecipe] = useState(null);
@@ -16,6 +18,8 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   const [unitOverride, setUnitOverride] = useState(null); // null means use global setting
   const [localPantryAdds, setLocalPantryAdds] = useState(new Set());
   const [localShoppingAdds, setLocalShoppingAdds] = useState(new Set());
+  const [showSavePricing, setShowSavePricing] = useState(false);
+  const { canSaveRecipe } = usePremium();
 
   const { settings } = useSettings();
   const currentUnit = unitOverride || settings.measurementSystem;
@@ -97,6 +101,8 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   const handleSave = () => {
     if (isSaved) {
       unsaveRecipe(recipe.idMeal);
+    } else if (!canSaveRecipe()) {
+      setShowSavePricing(true);
     } else {
       saveRecipe(fullRecipe || recipe);
     }
@@ -155,6 +161,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
   };
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <>
@@ -736,5 +743,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
         </>
       )}
     </AnimatePresence>
+    <PricingModal isOpen={showSavePricing} onClose={() => setShowSavePricing(false)} />
+    </>
   );
 }

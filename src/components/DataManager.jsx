@@ -1,14 +1,43 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { exportAppData, importAppData, clearAppData } from '../hooks/useLocalStorage';
+import { useAuth } from '../context/AuthContext';
+import { exportAllUserData } from '../lib/gdpr';
+import { DeleteAccountModal } from './DeleteAccountModal';
 
 export function DataManager() {
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [importStatus, setImportStatus] = useState(null);
+  const [exportingCloud, setExportingCloud] = useState(false);
+  const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const fileInputRef = useRef(null);
+  const { user } = useAuth();
 
-  const handleExport = () => {
-    const data = exportAppData();
+  const handleExport = async () => {
+    const localData = exportAppData();
+
+    // If logged in, also include Supabase data
+    if (user) {
+      setExportingCloud(true);
+      try {
+        const cloudData = await exportAllUserData(user.id);
+        const combined = {
+          ...localData,
+          cloud_data: cloudData,
+        };
+        downloadJson(combined);
+      } catch (err) {
+        console.warn('Cloud export failed, exporting local only:', err.message);
+        downloadJson(localData);
+      } finally {
+        setExportingCloud(false);
+      }
+    } else {
+      downloadJson(localData);
+    }
+  };
+
+  const downloadJson = (data) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -223,6 +252,26 @@ export function DataManager() {
         )}
       </div>
 
+      {/* Delete Account */}
+      {user && (
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-red-200 dark:border-red-900 p-6">
+          <h3 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+            <span>⚠️</span> Delete Account
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Permanently delete your account and all associated data from our servers. This cannot be undone.
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowDeleteAccount(true)}
+            className="w-full py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold rounded-xl border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+          >
+            Delete My Account
+          </motion.button>
+        </div>
+      )}
+
       {/* Instructions */}
       <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
         <h3 className="font-bold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
@@ -236,6 +285,8 @@ export function DataManager() {
           <li>Select the file you sent - your data will be restored!</li>
         </ol>
       </div>
+
+      <DeleteAccountModal isOpen={showDeleteAccount} onClose={() => setShowDeleteAccount(false)} />
     </div>
   );
 }
