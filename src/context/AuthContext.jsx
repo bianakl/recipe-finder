@@ -58,31 +58,33 @@ export function AuthProvider({ children }) {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
 
-    // Log consent after signup
+    // Log consent after signup (non-blocking — user may not be confirmed yet)
     if (data.user && consentData) {
-      await supabase.from('consent_records').insert([
-        {
-          user_id: data.user.id,
-          consent_type: 'data_processing',
-          granted: consentData.dataProcessing,
-          ip_address: consentData.ipAddress || null,
-          user_agent: navigator.userAgent,
-        },
-        ...(consentData.marketing !== undefined ? [{
-          user_id: data.user.id,
-          consent_type: 'marketing',
-          granted: consentData.marketing,
-          ip_address: consentData.ipAddress || null,
-          user_agent: navigator.userAgent,
-        }] : []),
-      ]);
-
-      // Update profile consent fields
-      await supabase.from('profiles').update({
-        data_processing_consent: consentData.dataProcessing,
-        marketing_consent: consentData.marketing || false,
-        consent_updated_at: new Date().toISOString(),
-      }).eq('id', data.user.id);
+      try {
+        await supabase.from('consent_records').insert([
+          {
+            user_id: data.user.id,
+            consent_type: 'data_processing',
+            granted: consentData.dataProcessing,
+            ip_address: consentData.ipAddress || null,
+            user_agent: navigator.userAgent,
+          },
+          ...(consentData.marketing !== undefined ? [{
+            user_id: data.user.id,
+            consent_type: 'marketing',
+            granted: consentData.marketing,
+            ip_address: consentData.ipAddress || null,
+            user_agent: navigator.userAgent,
+          }] : []),
+        ]);
+        await supabase.from('profiles').update({
+          data_processing_consent: consentData.dataProcessing,
+          marketing_consent: consentData.marketing || false,
+          consent_updated_at: new Date().toISOString(),
+        }).eq('id', data.user.id);
+      } catch (err) {
+        console.warn('Consent logging deferred:', err.message);
+      }
     }
 
     return data;
@@ -108,9 +110,15 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    if (!supabase) return;
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      if (supabase) await supabase.auth.signOut();
+    } catch (err) {
+      console.warn('Supabase sign out error:', err.message);
+    }
+    // Clear any persisted Supabase session from localStorage
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('sb-')) localStorage.removeItem(key);
+    });
     setUser(null);
     setProfile(null);
   }, []);

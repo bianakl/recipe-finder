@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useBackButton } from '../hooks/useBackButton';
 
 export function AuthModal({ isOpen, onClose }) {
-  const { signUp, signIn, signInWithGoogle } = useAuth();
+  const { signUp, signIn } = useAuth();
   const [mode, setMode] = useState('signin'); // 'signin' or 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +25,18 @@ export function AuthModal({ isOpen, onClose }) {
     setSuccess('');
   };
 
+  const friendlyError = (msg) => {
+    if (!msg) return 'Something went wrong. Please try again in a moment.';
+    if (msg.includes('Invalid login')) return 'Hmm, that email/password combo doesn\'t look right. Double-check and try again?';
+    if (msg.includes('Email not confirmed') || msg.includes('email_not_confirmed')) return 'Your email hasn\'t been verified yet. Try signing up again or contact support.';
+    if (msg.includes('User already registered')) return 'Looks like you already have an account with this email. Try signing in instead!';
+    if (msg.includes('Password should be')) return 'Your password needs to be at least 6 characters. Make it a good one!';
+    if (msg.includes('rate limit') || msg.includes('too many')) return 'Whoa, slow down! Too many attempts. Please wait a minute and try again.';
+    if (msg.includes('network') || msg.includes('fetch')) return 'Looks like you\'re offline. Check your connection and try again.';
+    if (msg.includes('Database error')) return 'We hit a small hiccup on our end. Please try again in a moment.';
+    return msg;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -34,34 +46,39 @@ export function AuthModal({ isOpen, onClose }) {
     try {
       if (mode === 'signup') {
         if (!dataConsent) {
-          setError('You must consent to data processing to create an account.');
+          setError('Please agree to the Privacy Policy to create your account.');
           setLoading(false);
           return;
         }
-        await signUp(email, password, {
+        const result = await signUp(email, password, {
           dataProcessing: dataConsent,
           marketing: marketingConsent,
         });
-        setSuccess('Check your email for a confirmation link!');
-        resetForm();
+        // Supabase returns an empty identities array if the email is already registered
+        if (result?.user?.identities?.length === 0) {
+          setError('Looks like you already have an account with this email. Try signing in instead!');
+          setLoading(false);
+          return;
+        }
+        setEmail('');
+        setPassword('');
+        setDataConsent(false);
+        setMarketingConsent(false);
+        setError('');
+        setSuccess('Welcome aboard! Your account is ready. Signing you in...');
+        setTimeout(() => {
+          resetForm();
+          onClose();
+        }, 1500);
       } else {
         await signIn(email, password);
-        onClose();
         resetForm();
+        onClose();
       }
     } catch (err) {
-      setError(err.message);
+      setError(friendlyError(err.message));
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setError('');
-    try {
-      await signInWithGoogle();
-    } catch (err) {
-      setError(err.message);
     }
   };
 
@@ -102,28 +119,6 @@ export function AuthModal({ isOpen, onClose }) {
                   ? 'Sign in to sync your recipes across devices'
                   : 'Start saving your recipes in the cloud'}
               </p>
-            </div>
-
-            {/* Google Sign In */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleGoogleSignIn}
-              className="w-full py-3 px-4 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 flex items-center justify-center gap-3 font-semibold text-gray-700 dark:text-gray-200 transition-colors mb-6"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-              </svg>
-              Continue with Google
-            </motion.button>
-
-            <div className="flex items-center gap-4 mb-6">
-              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-              <span className="text-sm text-gray-400 dark:text-gray-500">or</span>
-              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
             </div>
 
             {/* Email Form */}
@@ -187,23 +182,25 @@ export function AuthModal({ isOpen, onClose }) {
               )}
 
               {error && (
-                <motion.p
+                <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-xl"
+                  className="flex items-start gap-3 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 p-4 rounded-2xl border border-red-200 dark:border-red-800"
                 >
-                  {error}
-                </motion.p>
+                  <span className="text-lg shrink-0">oops</span>
+                  <p>{error}</p>
+                </motion.div>
               )}
 
               {success && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-3 rounded-xl"
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-start gap-3 text-sm text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 p-4 rounded-2xl border border-green-200 dark:border-green-800"
                 >
-                  {success}
-                </motion.p>
+                  <span className="text-lg shrink-0">yay!</span>
+                  <p>{success}</p>
+                </motion.div>
               )}
 
               <motion.button
@@ -213,7 +210,10 @@ export function AuthModal({ isOpen, onClose }) {
                 disabled={loading}
                 className="w-full py-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Please wait...' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+                {loading
+                  ? (mode === 'signin' ? 'Signing you in...' : 'Creating your account...')
+                  : (mode === 'signin' ? 'Sign In' : 'Create Account')
+                }
               </motion.button>
             </form>
 

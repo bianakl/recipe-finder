@@ -10,9 +10,12 @@ const PREMIUM_FEATURES = new Set([
   'nutrition',
 ]);
 
+const DEV_PREMIUM = import.meta.env.DEV;
+
 export function usePremium() {
-  const { isPremium, user } = useAuth();
+  const { isPremium: _isPremium, user } = useAuth();
   const { savedRecipes } = useRecipes();
+  const isPremium = DEV_PREMIUM || _isPremium;
 
   const canSaveRecipe = () => {
     if (isPremium) return true;
