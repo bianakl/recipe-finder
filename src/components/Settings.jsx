@@ -45,7 +45,7 @@ export function Settings({ onShowPrivacyPolicy }) {
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
               {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-xl object-cover" />
+                <img src={profile.avatar_url} alt="Profile avatar" className="w-10 h-10 rounded-xl object-cover" />
               ) : (
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-pink-500 flex items-center justify-center text-white font-bold">
                   {(profile?.display_name || user.email)?.[0]?.toUpperCase()}

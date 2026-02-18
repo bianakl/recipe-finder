@@ -80,6 +80,43 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
     };
   }, [isOpen]);
 
+  // Inject Recipe JSON-LD structured data for SEO
+  useEffect(() => {
+    if (!fullRecipe || !isOpen) return;
+    const ingredients = parseIngredients(fullRecipe);
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Recipe',
+      name: fullRecipe.strMeal,
+      image: fullRecipe.strMealThumb,
+      description: fullRecipe.strInstructions?.slice(0, 200),
+      recipeCategory: fullRecipe.strCategory,
+      recipeCuisine: fullRecipe.strArea,
+      recipeIngredient: ingredients.map(i => `${i.measure} ${i.ingredient}`.trim()),
+      recipeInstructions: fullRecipe.strInstructions,
+      ...(fullRecipe.cookTime && { cookTime: `PT${fullRecipe.cookTime}M` }),
+      ...(fullRecipe.servings && { recipeYield: `${fullRecipe.servings} servings` }),
+      ...(fullRecipe.calories && {
+        nutrition: {
+          '@type': 'NutritionInformation',
+          calories: `${fullRecipe.calories} calories`,
+          ...(fullRecipe.protein && { proteinContent: `${fullRecipe.protein}g` }),
+          ...(fullRecipe.carbs && { carbohydrateContent: `${fullRecipe.carbs}g` }),
+          ...(fullRecipe.fat && { fatContent: `${fullRecipe.fat}g` }),
+        },
+      }),
+    };
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'recipe-jsonld';
+    script.textContent = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+    return () => {
+      const el = document.getElementById('recipe-jsonld');
+      if (el) el.remove();
+    };
+  }, [fullRecipe, isOpen]);
+
   if (!recipe) return null;
 
   const isSaved = isRecipeSaved(recipe.idMeal);
