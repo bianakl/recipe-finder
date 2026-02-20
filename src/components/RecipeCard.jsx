@@ -2,13 +2,30 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
 import { usePremium } from '../hooks/usePremium';
+import { useSettings } from '../hooks/useSettings';
+import { DIETARY_OPTIONS } from '../services/api';
 import { PricingModal } from './PricingModal';
 
 export function RecipeCard({ recipe, onClick, index = 0 }) {
   const { isRecipeSaved, saveRecipe, unsaveRecipe } = useRecipes();
   const { canSaveRecipe } = usePremium();
+  const { settings } = useSettings();
   const [showPricing, setShowPricing] = useState(false);
   const isSaved = isRecipeSaved(recipe.idMeal);
+
+  const profilePrefs = settings.dietaryPreferences || [];
+  const recipeDietary = recipe.dietary || [];
+
+  // Build badge list: profile matches first, then others, max 3 shown
+  const matchingBadges = DIETARY_OPTIONS.filter(
+    o => recipeDietary.includes(o.id) && profilePrefs.includes(o.id)
+  );
+  const otherBadges = DIETARY_OPTIONS.filter(
+    o => recipeDietary.includes(o.id) && !profilePrefs.includes(o.id)
+  );
+  const allBadges = [...matchingBadges, ...otherBadges];
+  const visibleBadges = allBadges.slice(0, 3);
+  const overflow = allBadges.length - visibleBadges.length;
 
   const handleSaveClick = (e) => {
     e.stopPropagation();
@@ -79,7 +96,7 @@ export function RecipeCard({ recipe, onClick, index = 0 }) {
         </div>
       </div>
 
-      <div className="p-5">
+      <div className="p-5 space-y-2.5">
         <div className="flex flex-wrap gap-2">
           {recipe.strCategory && (
             <span className="badge-primary">
@@ -92,6 +109,32 @@ export function RecipeCard({ recipe, onClick, index = 0 }) {
             </span>
           )}
         </div>
+
+        {visibleBadges.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {visibleBadges.map(opt => {
+              const isMatch = profilePrefs.includes(opt.id);
+              return (
+                <span
+                  key={opt.id}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                    isMatch
+                      ? 'bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 ring-1 ring-brand-400/30'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  <span>{opt.icon}</span>
+                  <span>{opt.label}</span>
+                </span>
+              );
+            })}
+            {overflow > 0 && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500">
+                +{overflow}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </motion.article>
     <PricingModal isOpen={showPricing} onClose={() => setShowPricing(false)} />

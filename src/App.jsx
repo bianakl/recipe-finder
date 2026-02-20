@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from './components/Header';
 import { RecipeGrid } from './components/RecipeGrid';
@@ -24,6 +24,7 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { useAuth } from './context/AuthContext';
 import { useRecipes } from './context/RecipeContext';
 import { usePremium } from './hooks/usePremium';
+import { useSettings } from './hooks/useSettings';
 import { useRecipeSearch } from './hooks/useRecipeSearch';
 import { useTabHistory, useBackButton } from './hooks/useBackButton';
 import { filterRecipes } from './services/api';
@@ -47,21 +48,19 @@ function App() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [activeTab, setActiveTab] = useState('search');
   const [filters, setFilters] = useState({ dietary: [], cookTime: null, cuisine: null });
-  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [showWalkthrough, setShowWalkthrough] = useState(
+    () => !localStorage.getItem('recipe-finder-walkthrough-completed')
+  );
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const { showAuthModal, setShowAuthModal } = useAuth();
   const { syncStatus } = useRecipes();
-  const { isPremium, canAccessFeature } = usePremium();
+  const { isPremium } = usePremium();
+  const { settings } = useSettings();
+
+  // Dietary preferences saved in Settings act as a persistent base layer
+  const profileDietary = settings.dietaryPreferences || [];
 
   const PREMIUM_TABS = new Set(['pantry', 'planner', 'shopping', 'nutrition']);
-
-  // Check if first-time user
-  useEffect(() => {
-    const hasCompletedWalkthrough = localStorage.getItem('recipe-finder-walkthrough-completed');
-    if (!hasCompletedWalkthrough) {
-      setShowWalkthrough(true);
-    }
-  }, []);
 
   const handleWalkthroughComplete = () => {
     localStorage.setItem('recipe-finder-walkthrough-completed', 'true');
@@ -84,8 +83,14 @@ function App() {
   // Back button support for recipe drawer
   useBackButton(!!selectedRecipe, handleCloseDrawer, 'recipeDrawer');
 
+  // Merge profile-level dietary preferences with session filter overrides
+  const effectiveFilters = {
+    ...filters,
+    dietary: [...new Set([...profileDietary, ...(filters.dietary || [])])],
+  };
+
   // Apply filters to search results
-  const filteredResults = filterRecipes(results, filters);
+  const filteredResults = filterRecipes(results, effectiveFilters);
 
   const handleTagClick = (type, value) => {
     setSelectedRecipe(null);
@@ -96,8 +101,6 @@ function App() {
   const clearFilters = () => {
     setFilters({ dietary: [], cookTime: null, cuisine: null });
   };
-
-  const hasActiveFilters = filters.dietary?.length > 0 || filters.cookTime || filters.cuisine;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -162,6 +165,7 @@ function App() {
                   filters={filters}
                   onFilterChange={setFilters}
                   onClear={clearFilters}
+                  profileDietary={profileDietary}
                 />
               )}
 

@@ -56,6 +56,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
     return existingRecipe?.strMeal || 'Another recipe';
   };
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (recipe && isOpen) {
       setIsLoading(true);
@@ -68,6 +69,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
       setNote(getRecipeNote(recipe.idMeal));
     }
   }, [recipe, isOpen, getRecipeNote]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (isOpen) {

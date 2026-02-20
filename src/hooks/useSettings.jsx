@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS = {
   measurementSystem: 'imperial', // 'imperial' or 'metric'
   temperatureUnit: 'fahrenheit', // 'fahrenheit' or 'celsius'
   defaultServings: 4,
+  dietaryPreferences: [], // persisted dietary tags (e.g. ['vegan', 'gluten-free'])
 };
 
 const SettingsContext = createContext(null);

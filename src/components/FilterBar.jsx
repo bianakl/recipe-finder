@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DIETARY_OPTIONS, COOK_TIME_OPTIONS, CUISINE_OPTIONS } from '../services/api';
 
-export function FilterBar({ filters, onFilterChange, onClear }) {
+export function FilterBar({ filters, onFilterChange, onClear, profileDietary = [] }) {
   const [expandedSection, setExpandedSection] = useState(null);
 
   const activeFilterCount = [
@@ -25,6 +25,15 @@ export function FilterBar({ filters, onFilterChange, onClear }) {
 
   return (
     <div className="space-y-4">
+      {/* Profile dietary indicator */}
+      {profileDietary.length > 0 && (
+        <div className="flex items-center gap-2 text-xs text-brand-600 dark:text-brand-400">
+          <span>🥗</span>
+          <span>Diet profile active: {profileDietary.map(id => DIETARY_OPTIONS.find(o => o.id === id)?.label || id).join(', ')}</span>
+          <span className="text-gray-400 dark:text-gray-500">· Edit in Settings</span>
+        </div>
+      )}
+
       {/* Filter Chips */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -156,29 +165,56 @@ export function FilterBar({ filters, onFilterChange, onClear }) {
               )}
 
               {expandedSection === 'dietary' && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {DIETARY_OPTIONS.map(option => (
-                    <motion.button
-                      key={option.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => handleDietaryToggle(option.id)}
-                      className={`p-3 rounded-xl text-left transition-all ${
-                        filters.dietary?.includes(option.id)
-                          ? 'bg-green-100 dark:bg-green-900/40 border-2 border-green-500'
-                          : 'bg-gray-50 dark:bg-gray-800 border-2 border-transparent hover:border-gray-200 dark:hover:border-gray-700'
-                      }`}
-                    >
-                      <span className="text-2xl mb-1 block">{option.icon}</span>
-                      <span className={`text-sm font-medium ${
-                        filters.dietary?.includes(option.id)
-                          ? 'text-green-700 dark:text-green-300'
-                          : 'text-gray-700 dark:text-gray-300'
-                      }`}>
-                        {option.label}
-                      </span>
-                    </motion.button>
-                  ))}
+                <div className="space-y-3">
+                  {[
+                    { group: 'lifestyle', label: 'Lifestyle' },
+                    { group: 'avoid', label: 'I Avoid' },
+                    { group: 'nutrition', label: 'Nutrition Goals' },
+                  ].map(({ group, label }) => {
+                    const groupOptions = DIETARY_OPTIONS.filter(o => o.group === group);
+                    return (
+                      <div key={group}>
+                        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">{label}</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          {groupOptions.map(option => {
+                            const fromProfile = profileDietary.includes(option.id);
+                            const fromSession = filters.dietary?.includes(option.id);
+                            const active = fromProfile || fromSession;
+                            return (
+                              <motion.button
+                                key={option.id}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => !fromProfile && handleDietaryToggle(option.id)}
+                                title={fromProfile ? 'Set in your diet profile (edit in Settings)' : undefined}
+                                className={`p-3 rounded-xl text-left transition-all relative ${
+                                  fromProfile
+                                    ? 'bg-brand-50 dark:bg-brand-900/30 border-2 border-brand-400 cursor-default'
+                                    : active
+                                    ? 'bg-green-100 dark:bg-green-900/40 border-2 border-green-500'
+                                    : 'bg-gray-50 dark:bg-gray-800 border-2 border-transparent hover:border-gray-200 dark:hover:border-gray-700'
+                                }`}
+                              >
+                                {fromProfile && (
+                                  <span className="absolute top-1 right-1 text-[9px] text-brand-500 font-bold">Profile</span>
+                                )}
+                                <span className="text-2xl mb-1 block">{option.icon}</span>
+                                <span className={`text-sm font-medium ${
+                                  fromProfile
+                                    ? 'text-brand-700 dark:text-brand-300'
+                                    : active
+                                    ? 'text-green-700 dark:text-green-300'
+                                    : 'text-gray-700 dark:text-gray-300'
+                                }`}>
+                                  {option.label}
+                                </span>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 

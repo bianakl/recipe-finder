@@ -126,7 +126,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Black Pepper', strMeasure6: 'To taste',
     cookTime: 20, difficulty: 'Easy', servings: 4,
     calories: 380, protein: 42, carbs: 2, fat: 22,
-    dietary: ['gluten-free', 'low-carb', 'keto', 'high-protein'],
+    dietary: ['gluten-free', 'dairy-free', 'nut-free', 'shellfish-free', 'low-carb', 'keto', 'high-protein', 'pescatarian', 'halal'],
   },
   {
     idMeal: 'mock8',
@@ -719,7 +719,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Pita Bread', strMeasure6: '4 pieces',
     cookTime: 25, difficulty: 'Easy', servings: 4,
     calories: 480, protein: 42, carbs: 32, fat: 22,
-    dietary: [],
+    dietary: ['high-protein', 'nut-free', 'shellfish-free', 'halal'],
   },
   {
     idMeal: 'mock37',
@@ -755,7 +755,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Olive Oil', strMeasure6: '4 tbsp',
     cookTime: 60, difficulty: 'Medium', servings: 4,
     calories: 420, protein: 52, carbs: 4, fat: 24,
-    dietary: ['gluten-free', 'low-carb', 'keto', 'high-protein'],
+    dietary: ['gluten-free', 'dairy-free', 'nut-free', 'shellfish-free', 'egg-free', 'low-carb', 'keto', 'high-protein', 'halal', 'kosher'],
   },
   // SWEET SNACKS & DESSERTS
   {
@@ -954,7 +954,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Feta Cheese', strMeasure6: '50g',
     cookTime: 25, difficulty: 'Easy', servings: 4,
     calories: 220, protein: 14, carbs: 18, fat: 12,
-    dietary: ['vegetarian', 'gluten-free'],
+    dietary: ['vegetarian', 'gluten-free', 'nut-free', 'shellfish-free', 'halal', 'kosher'],
   },
   {
     idMeal: 'mock50',
@@ -972,7 +972,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Cumin', strMeasure6: '1/2 tsp',
     cookTime: 10, difficulty: 'Easy', servings: 6,
     calories: 180, protein: 8, carbs: 20, fat: 9,
-    dietary: ['vegan', 'gluten-free'],
+    dietary: ['vegan', 'gluten-free', 'dairy-free', 'nut-free', 'shellfish-free', 'egg-free', 'high-fiber', 'halal', 'kosher'],
   },
   {
     idMeal: 'mock51',
@@ -1188,7 +1188,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Cumin', strMeasure6: '1 tsp',
     cookTime: 45, difficulty: 'Medium', servings: 4,
     calories: 420, protein: 16, carbs: 72, fat: 8,
-    dietary: ['vegan'],
+    dietary: ['vegan', 'dairy-free', 'shellfish-free', 'egg-free', 'halal', 'kosher'],
   },
   {
     idMeal: 'mock63',
@@ -1314,7 +1314,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Lemon Juice', strMeasure6: '3 tbsp',
     cookTime: 15, difficulty: 'Easy', servings: 4,
     calories: 180, protein: 5, carbs: 24, fat: 8,
-    dietary: ['vegan'],
+    dietary: ['vegan', 'dairy-free', 'shellfish-free', 'egg-free', 'halal', 'kosher'],
   },
   {
     idMeal: 'mock70',
@@ -1332,7 +1332,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Tomato', strMeasure6: '2',
     cookTime: 25, difficulty: 'Easy', servings: 4,
     calories: 280, protein: 16, carbs: 38, fat: 8,
-    dietary: ['vegan', 'gluten-free'],
+    dietary: ['vegan', 'gluten-free', 'dairy-free', 'nut-free', 'shellfish-free', 'egg-free', 'high-protein', 'high-fiber', 'halal', 'kosher'],
   },
   {
     idMeal: 'mock71',
@@ -1368,7 +1368,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Vegetable Oil', strMeasure6: '1L',
     cookTime: 40, difficulty: 'Medium', servings: 4,
     calories: 620, protein: 28, carbs: 65, fat: 28,
-    dietary: [],
+    dietary: ['dairy-free', 'nut-free', 'pescatarian', 'halal'],
   },
   {
     idMeal: 'mock73',
@@ -1602,7 +1602,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Baking Powder', strMeasure6: '1 tsp',
     cookTime: 25, difficulty: 'Medium', servings: 6,
     calories: 250, protein: 12, carbs: 30, fat: 10,
-    dietary: ['vegan'],
+    dietary: ['vegan', 'dairy-free', 'nut-free', 'shellfish-free', 'egg-free', 'high-fiber', 'halal', 'kosher'],
   },
   {
     idMeal: 'mock86',
@@ -1692,7 +1692,7 @@ export const MOCK_RECIPES = [
     strIngredient6: 'Lime', strMeasure6: '1',
     cookTime: 20, difficulty: 'Easy', servings: 4,
     calories: 380, protein: 30, carbs: 12, fat: 24,
-    dietary: ['gluten-free', 'high-protein'],
+    dietary: ['gluten-free', 'dairy-free', 'nut-free', 'high-protein', 'pescatarian', 'halal'],
   },
   {
     idMeal: 'mock91',
@@ -1841,12 +1841,26 @@ export const MOCK_RECIPES = [
 ];
 
 export const DIETARY_OPTIONS = [
-  { id: 'vegetarian', label: 'Vegetarian', icon: '🥬' },
-  { id: 'vegan', label: 'Vegan', icon: '🌱' },
-  { id: 'gluten-free', label: 'Gluten-Free', icon: '🌾' },
-  { id: 'low-carb', label: 'Low Carb', icon: '🥩' },
-  { id: 'keto', label: 'Keto', icon: '🥑' },
-  { id: 'high-protein', label: 'High Protein', icon: '💪' },
+  // Lifestyle / diet style
+  { id: 'vegetarian', label: 'Vegetarian', icon: '🥬', group: 'lifestyle' },
+  { id: 'vegan', label: 'Vegan', icon: '🌱', group: 'lifestyle' },
+  { id: 'pescatarian', label: 'Pescatarian', icon: '🐟', group: 'lifestyle' },
+  { id: 'paleo', label: 'Paleo', icon: '🫀', group: 'lifestyle' },
+  { id: 'keto', label: 'Keto', icon: '🥑', group: 'lifestyle' },
+  { id: 'halal', label: 'Halal', icon: '☪️', group: 'lifestyle' },
+  { id: 'kosher', label: 'Kosher', icon: '✡️', group: 'lifestyle' },
+  // Avoid / exclude
+  { id: 'gluten-free', label: 'Gluten-Free', icon: '🌾', group: 'avoid' },
+  { id: 'dairy-free', label: 'Dairy-Free', icon: '🥛', group: 'avoid' },
+  { id: 'nut-free', label: 'Nut-Free', icon: '🥜', group: 'avoid' },
+  { id: 'shellfish-free', label: 'Shellfish-Free', icon: '🦐', group: 'avoid' },
+  { id: 'egg-free', label: 'Egg-Free', icon: '🥚', group: 'avoid' },
+  { id: 'low-carb', label: 'Low-Carb', icon: '🍞', group: 'avoid' },
+  // Nutrition goals
+  { id: 'high-protein', label: 'High-Protein', icon: '💪', group: 'nutrition' },
+  { id: 'low-calorie', label: 'Low-Calorie', icon: '🌿', group: 'nutrition' },
+  { id: 'high-fiber', label: 'High-Fiber', icon: '🫐', group: 'nutrition' },
+  { id: 'low-fat', label: 'Low-Fat', icon: '🫧', group: 'nutrition' },
 ];
 
 export const CUISINE_OPTIONS = [
@@ -1943,7 +1957,7 @@ export async function searchRecipes(query, filters = {}) {
 
     // Combine results
     return [...results, ...mockResults];
-  } catch (error) {
+  } catch (_err) {
     // Fallback to mock data on network error
     const lowerQuery = query.toLowerCase();
     return MOCK_RECIPES.filter(r =>
@@ -2023,7 +2037,7 @@ export async function getRecipeById(id) {
     const response = await fetch(`${BASE_URL}/lookup.php?i=${id}`);
     const data = await response.json();
     return data.meals?.[0] || null;
-  } catch (error) {
+  } catch (_err) {
     return null;
   }
 }
@@ -2049,7 +2063,7 @@ export function scaleIngredients(ingredients, originalServings, newServings) {
   return ingredients.map(item => {
     const scaled = { ...item };
     // Try to parse and scale numeric measures
-    const match = item.measure.match(/^([\d.\/]+)\s*(.*)$/);
+    const match = item.measure.match(/^([\d./]+)\s*(.*)$/);
     if (match) {
       let num = match[1];
       // Handle fractions
@@ -2068,7 +2082,7 @@ export function scaleIngredients(ingredients, originalServings, newServings) {
   });
 }
 
-export function calculateNutrition(mealPlan, getRecipeById) {
+export function calculateNutrition(mealPlan, _getRecipeById) {
   const totals = { calories: 0, protein: 0, carbs: 0, fat: 0, meals: 0 };
 
   Object.values(mealPlan).forEach(day => {
@@ -2582,21 +2596,21 @@ export function getIngredientSourcing(ingredientName, country = null) {
 // Get all exotic ingredients from database
 export function getExoticIngredients() {
   return Object.entries(INGREDIENTS_DATABASE)
-    .filter(([_, data]) => data.rarity === 'exotic')
+    .filter(([, data]) => data.rarity === 'exotic')
     .map(([name, data]) => ({ name, ...data }));
 }
 
 // Get all common ingredients from database
 export function getCommonIngredients() {
   return Object.entries(INGREDIENTS_DATABASE)
-    .filter(([_, data]) => data.rarity === 'common')
+    .filter(([, data]) => data.rarity === 'common')
     .map(([name, data]) => ({ name, ...data }));
 }
 
 // Get ingredients by category
 export function getIngredientsByCategory(category) {
   return Object.entries(INGREDIENTS_DATABASE)
-    .filter(([_, data]) => data.category === category)
+    .filter(([, data]) => data.category === category)
     .map(([name, data]) => ({ name, ...data }));
 }
 

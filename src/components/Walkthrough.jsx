@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const WALKTHROUGH_STEPS = [
@@ -64,6 +64,15 @@ const WALKTHROUGH_STEPS = [
     arrow: 'top'
   },
   {
+    id: 'diet',
+    title: 'Set Your Diet Profile',
+    description: 'Vegan, kosher, pescatarian, gluten-free? Set your preferences once in Settings and every recipe will automatically match — no re-selecting every time.',
+    icon: '🥗',
+    target: '[data-tour="settings-tab"]',
+    position: 'bottom',
+    arrow: 'top'
+  },
+  {
     id: 'ready',
     title: "You're Ready!",
     description: "Start by searching for something tasty. Happy cooking! 🍳",
@@ -71,6 +80,51 @@ const WALKTHROUGH_STEPS = [
     target: null,
   }
 ];
+
+function Arrow({ targetRect, arrow }) {
+  if (!targetRect || !arrow) return null;
+
+  const arrowStyle = {
+    position: 'absolute',
+    width: 0,
+    height: 0,
+  };
+
+  switch (arrow) {
+    case 'top':
+      return (
+        <div
+          style={{
+            ...arrowStyle,
+            top: '-12px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            borderLeft: '12px solid transparent',
+            borderRight: '12px solid transparent',
+            borderBottom: '12px solid white',
+          }}
+          className="dark:border-b-gray-900"
+        />
+      );
+    case 'bottom':
+      return (
+        <div
+          style={{
+            ...arrowStyle,
+            bottom: '-12px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            borderLeft: '12px solid transparent',
+            borderRight: '12px solid transparent',
+            borderTop: '12px solid white',
+          }}
+          className="dark:border-t-gray-900"
+        />
+      );
+    default:
+      return null;
+  }
+}
 
 export function Walkthrough({ onComplete }) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -87,8 +141,7 @@ export function Walkthrough({ onComplete }) {
       const element = document.querySelector(step.target);
       if (element) {
         const rect = element.getBoundingClientRect();
-        setTargetRect(rect);
-        // Scroll element into view if needed
+        setTargetRect(rect); // eslint-disable-line react-hooks/set-state-in-effect -- DOM measurement
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         setTargetRect(null);
@@ -169,52 +222,6 @@ export function Walkthrough({ onComplete }) {
     };
   };
 
-  // Arrow pointing to target
-  const Arrow = () => {
-    if (!targetRect || !step.arrow) return null;
-
-    const arrowStyle = {
-      position: 'absolute',
-      width: 0,
-      height: 0,
-    };
-
-    switch (step.arrow) {
-      case 'top':
-        return (
-          <div
-            style={{
-              ...arrowStyle,
-              top: '-12px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              borderLeft: '12px solid transparent',
-              borderRight: '12px solid transparent',
-              borderBottom: '12px solid white',
-            }}
-            className="dark:border-b-gray-900"
-          />
-        );
-      case 'bottom':
-        return (
-          <div
-            style={{
-              ...arrowStyle,
-              bottom: '-12px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              borderLeft: '12px solid transparent',
-              borderRight: '12px solid transparent',
-              borderTop: '12px solid white',
-            }}
-            className="dark:border-t-gray-900"
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   if (!isVisible) return null;
 
   return (
@@ -283,7 +290,7 @@ export function Walkthrough({ onComplete }) {
           className="pointer-events-auto"
         >
           <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
-            <Arrow />
+            <Arrow targetRect={targetRect} arrow={step.arrow} />
 
             {/* Progress Bar */}
             <div className="h-1 bg-gray-200 dark:bg-gray-800">

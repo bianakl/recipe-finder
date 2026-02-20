@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../context/AuthContext';
 import { openCustomerPortal } from '../lib/stripe';
+import { DIETARY_OPTIONS } from '../services/api';
 import { PricingModal } from './PricingModal';
 import { ConsentManager } from './ConsentManager';
 import { DeleteAccountModal } from './DeleteAccountModal';
@@ -239,6 +240,116 @@ export function Settings({ onShowPrivacyPolicy }) {
             +
           </motion.button>
         </div>
+      </div>
+
+      {/* My Diet */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <h3 className="font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+          <span>🥗</span> My Diet
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
+          Your selections are always applied when browsing recipes. Change anytime.
+        </p>
+
+        {/* Lifestyle group */}
+        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+          Lifestyle
+        </p>
+        <div className="flex flex-wrap gap-2 mb-5">
+          {DIETARY_OPTIONS.filter(o => o.group === 'lifestyle').map(option => {
+            const active = (settings.dietaryPreferences || []).includes(option.id);
+            return (
+              <motion.button
+                key={option.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  const current = settings.dietaryPreferences || [];
+                  const next = active ? current.filter(d => d !== option.id) : [...current, option.id];
+                  updateSetting('dietaryPreferences', next);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all border-2 ${
+                  active
+                    ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
+                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                }`}
+              >
+                <span>{option.icon}</span>
+                <span>{option.label}</span>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Avoid group */}
+        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+          I Avoid
+        </p>
+        <div className="flex flex-wrap gap-2 mb-5">
+          {DIETARY_OPTIONS.filter(o => o.group === 'avoid').map(option => {
+            const active = (settings.dietaryPreferences || []).includes(option.id);
+            return (
+              <motion.button
+                key={option.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  const current = settings.dietaryPreferences || [];
+                  const next = active ? current.filter(d => d !== option.id) : [...current, option.id];
+                  updateSetting('dietaryPreferences', next);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all border-2 ${
+                  active
+                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                }`}
+              >
+                <span>{option.icon}</span>
+                <span>{option.label}</span>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Nutrition group */}
+        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+          Nutrition Goals
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {DIETARY_OPTIONS.filter(o => o.group === 'nutrition').map(option => {
+            const active = (settings.dietaryPreferences || []).includes(option.id);
+            return (
+              <motion.button
+                key={option.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  const current = settings.dietaryPreferences || [];
+                  const next = active ? current.filter(d => d !== option.id) : [...current, option.id];
+                  updateSetting('dietaryPreferences', next);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all border-2 ${
+                  active
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                }`}
+              >
+                <span>{option.icon}</span>
+                <span>{option.label}</span>
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {(settings.dietaryPreferences || []).length > 0 && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-4 text-xs text-center text-brand-600 dark:text-brand-400"
+          >
+            {(settings.dietaryPreferences || []).length} preference{(settings.dietaryPreferences || []).length !== 1 ? 's' : ''} saved — applied automatically when you browse
+          </motion.p>
+        )}
       </div>
 
       {/* Reset Settings */}

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
 import { PricingModal } from './PricingModal';
 
 export function SubscriptionBanner({ type = 'lapsed' }) {
-  const { profile } = useAuth();
   const [showPricing, setShowPricing] = useState(false);
 
   if (type === 'past_due') {

@@ -11,12 +11,14 @@ export function ConsentManager() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (profile) {
       setDataConsent(profile.data_processing_consent || false);
       setMarketingConsent(profile.marketing_consent || false);
     }
   }, [profile]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!user || !isSupabaseConfigured()) return;

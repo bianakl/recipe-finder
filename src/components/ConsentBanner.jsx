@@ -1,17 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CONSENT_KEY = 'recipe-finder-consent';
 
 export function ConsentBanner() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    const consent = localStorage.getItem(CONSENT_KEY);
-    if (!consent) {
-      setShow(true);
-    }
-  }, []);
+  const [show, setShow] = useState(() => !localStorage.getItem(CONSENT_KEY));
 
   const handleAccept = () => {
     localStorage.setItem(CONSENT_KEY, JSON.stringify({

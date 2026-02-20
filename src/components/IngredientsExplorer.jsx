@@ -1,11 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   INGREDIENTS_DATABASE,
   getUserCountry,
   getIngredientSourcing,
-  getExoticIngredients,
-  getCommonIngredients,
   getIngredientCategories,
 } from '../services/api';
 
@@ -134,11 +132,7 @@ export function IngredientsExplorer() {
   const [filter, setFilter] = useState('all'); // all, exotic, common
   const [categoryFilter, setCategoryFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [userCountry, setUserCountry] = useState('default');
-
-  useEffect(() => {
-    setUserCountry(getUserCountry());
-  }, []);
+  const [userCountry] = useState(() => getUserCountry());
 
   const categories = getIngredientCategories();
 

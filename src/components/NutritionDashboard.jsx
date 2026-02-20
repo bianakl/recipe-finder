@@ -11,9 +11,43 @@ import {
 
 const EXTRAS_KEY = 'recipe-finder-nutrition-extras';
 
+function NutrientBar({ label, value, goal, color, unit = 'g' }) {
+  const percentage = Math.min((value / goal) * 100, 100);
+  const isOver = value > goal;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-between items-baseline">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </span>
+        <span className={`text-sm font-bold ${isOver ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>
+          {Math.round(value)}{unit}
+          <span className="text-gray-400 dark:text-gray-500 font-normal"> / {goal}{unit}</span>
+        </span>
+      </div>
+      <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${percentage}%` }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className={`h-full rounded-full ${color}`}
+        />
+      </div>
+    </div>
+  );
+}
+
 export function NutritionDashboard() {
   const { mealPlan, getRecipeById } = useRecipes();
-  const [extras, setExtras] = useState({ drinks: {}, snacks: {} });
+  const [extras, setExtras] = useState(() => {
+    try {
+      const saved = localStorage.getItem(EXTRAS_KEY);
+      return saved ? JSON.parse(saved) : { drinks: {}, snacks: {} };
+    } catch {
+      return { drinks: {}, snacks: {} };
+    }
+  });
   const [showExtrasModal, setShowExtrasModal] = useState(false);
   const [extrasTab, setExtrasTab] = useState('drinks');
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,17 +71,6 @@ export function NutritionDashboard() {
     });
   }, [extrasTab, searchQuery, selectedCategory]);
 
-  // Load extras from localStorage
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(EXTRAS_KEY);
-      if (saved) {
-        setExtras(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.error('Failed to load extras:', e);
-    }
-  }, []);
 
   // Save extras to localStorage
   useEffect(() => {
@@ -119,33 +142,6 @@ export function NutritionDashboard() {
 
   const clearExtras = () => {
     setExtras({ drinks: {}, snacks: {} });
-  };
-
-  const NutrientBar = ({ label, value, goal, color, unit = 'g' }) => {
-    const percentage = Math.min((value / goal) * 100, 100);
-    const isOver = value > goal;
-
-    return (
-      <div className="space-y-2">
-        <div className="flex justify-between items-baseline">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {label}
-          </span>
-          <span className={`text-sm font-bold ${isOver ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>
-            {Math.round(value)}{unit}
-            <span className="text-gray-400 dark:text-gray-500 font-normal"> / {goal}{unit}</span>
-          </span>
-        </div>
-        <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${percentage}%` }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className={`h-full rounded-full ${color}`}
-          />
-        </div>
-      </div>
-    );
   };
 
   if (nutrition.mealsPlanned === 0) {
