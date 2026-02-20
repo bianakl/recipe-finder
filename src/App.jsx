@@ -347,6 +347,7 @@ function App() {
         isOpen={!!selectedRecipe}
         onClose={handleCloseDrawer}
         onTagClick={handleTagClick}
+        onRecipeSelect={handleRecipeClick}
       />
 
       {/* First-time user walkthrough */}

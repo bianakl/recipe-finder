@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
 import { usePremium } from '../hooks/usePremium';
 import { useSettings, convertMeasurement } from '../hooks/useSettings.jsx';
-import { getRecipeById, parseIngredients, scaleIngredients, ingredientMatchesPantry } from '../services/api';
+import { getRecipeById, parseIngredients, scaleIngredients, ingredientMatchesPantry, MOCK_RECIPES } from '../services/api';
 import { StarRating } from './StarRating';
 import { PricingModal } from './PricingModal';
 
-export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
+export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSelect }) {
   const [fullRecipe, setFullRecipe] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showMealPlanModal, setShowMealPlanModal] = useState(false);
@@ -642,6 +642,54 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick }) {
                         Watch Video Tutorial
                       </motion.a>
                     )}
+
+                    {/* Similar Recipes */}
+                    {(() => {
+                      const similar = MOCK_RECIPES.filter(r => {
+                        if (r.idMeal === recipe?.idMeal) return false;
+                        const sameCategory = r.strCategory === recipe?.strCategory;
+                        const sameArea = r.strArea === recipe?.strArea;
+                        const sharedDiet = (r.dietary || []).some(d => (recipe?.dietary || []).includes(d));
+                        return sameCategory || sameArea || sharedDiet;
+                      }).slice(0, 6);
+                      if (!similar.length) return null;
+                      return (
+                        <div className="mt-2 pt-6 border-t border-gray-100 dark:border-gray-800">
+                          <h3 className="font-bold text-gray-900 dark:text-white mb-4 text-base">
+                            You might also like
+                          </h3>
+                          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1">
+                            {similar.map(sim => (
+                              <motion.button
+                                key={sim.idMeal}
+                                onClick={() => onRecipeSelect?.(sim)}
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                className="shrink-0 w-36 text-left group"
+                              >
+                                <div className="relative aspect-[4/3] overflow-hidden rounded-xl mb-2">
+                                  <img
+                                    src={sim.strMealThumb}
+                                    alt={sim.strMeal}
+                                    loading="lazy"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                </div>
+                                <p className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 leading-snug">
+                                  {sim.strMeal}
+                                </p>
+                                {sim.strCategory && (
+                                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                                    {sim.strCategory}
+                                  </p>
+                                )}
+                              </motion.button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </>
                 )}
               </div>
