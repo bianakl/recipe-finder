@@ -22,6 +22,7 @@ A full-featured meal planning web app built with React + Vite + Supabase. Search
 | **Meal Suggestions** | AI-style suggestions based on your pantry and preferences |
 | **Ingredients Explorer** | Browse and learn about ingredients |
 | **Similar Recipes** | Every recipe drawer shows related recipes by category, cuisine, and dietary tags |
+| **Recipe Sharing** | Share any recipe via native share sheet (mobile) or clipboard copy (desktop) |
 | **Browse by Category** | Discover tab shows all TheMealDB categories with thumbnails — browse without typing |
 | **Browse by Cuisine** | Filter recipes by cuisine area from the Discover tab |
 | **Recipe of the Day** | Featured hero recipe on the Discover tab, refreshes daily, cached locally |
