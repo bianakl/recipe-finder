@@ -19,6 +19,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
   const [localPantryAdds, setLocalPantryAdds] = useState(new Set());
   const [localShoppingAdds, setLocalShoppingAdds] = useState(new Set());
   const [showSavePricing, setShowSavePricing] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
   const { canSaveRecipe } = usePremium();
 
   const { settings } = useSettings();
@@ -189,6 +190,22 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
     setShowNoteInput(false);
   };
 
+  const handleShare = async () => {
+    const url = `https://www.themealdb.com/meal/${recipe.idMeal}`;
+    const shareData = {
+      title: recipe.strMeal,
+      text: `Check out this recipe: ${recipe.strMeal}`,
+      url,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }
+  };
+
   const DAY_LABELS = {
     monday: 'Monday',
     tuesday: 'Tuesday',
@@ -340,6 +357,27 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     Cooked
+                  </motion.button>
+
+                  <motion.button
+                    onClick={handleShare}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="py-3 px-4 rounded-2xl font-bold bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-200 flex items-center justify-center gap-2"
+                    title="Share recipe"
+                  >
+                    <AnimatePresence mode="wait">
+                      {shareCopied ? (
+                        <motion.svg key="check" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </motion.svg>
+                      ) : (
+                        <motion.svg key="share" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </motion.svg>
+                      )}
+                    </AnimatePresence>
+                    {shareCopied ? 'Copied!' : 'Share'}
                   </motion.button>
                 </div>
 
