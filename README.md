@@ -22,6 +22,9 @@ A full-featured meal planning web app built with React + Vite + Supabase. Search
 | **Meal Suggestions** | AI-style suggestions based on your pantry and preferences |
 | **Ingredients Explorer** | Browse and learn about ingredients |
 | **Similar Recipes** | Every recipe drawer shows related recipes by category, cuisine, and dietary tags |
+| **Browse by Category** | Discover tab shows all TheMealDB categories with thumbnails — browse without typing |
+| **Browse by Cuisine** | Filter recipes by cuisine area from the Discover tab |
+| **Recipe of the Day** | Featured hero recipe on the Discover tab, refreshes daily, cached locally |
 | **Data Manager** | Export and import all your data (recipes, plan, pantry, history) |
 | **Auth & Sync** | Sign in with email or Google — data syncs across devices via Supabase |
 | **Dark Mode** | Full dark mode support |
@@ -93,6 +96,17 @@ Both layers are merged before filtering results. Profile preferences are stored 
 
 Supported dietary tags: Vegetarian, Vegan, Pescatarian, Paleo, Keto, Halal, Kosher, Gluten-Free, Dairy-Free, Nut-Free, Shellfish-Free, Egg-Free, Low-Carb, High-Protein, Low-Calorie, High-Fiber, Low-Fat.
 
+For live API results (TheMealDB), dietary tags are **inferred from ingredients** using keyword detection across 8 dietary categories, so filtering works correctly on real recipes too.
+
+---
+
+## Performance
+
+- **Code splitting**: Heavy tabs lazy-load on first visit via React `lazy()` + `Suspense`
+- **Initial JS bundle**: 429KB gzipped (down from 827KB — 48% reduction)
+- **Vendor chunks**: React, Framer Motion, and Supabase split into separate cached chunks
+- **Images**: Lazy-loaded throughout with `loading="lazy"`
+
 ---
 
 ## Development
@@ -131,3 +145,5 @@ This project has custom Claude Code skills in `.claude/skills/`:
 ## Built by
 
 Biana Kleyner — built as a learning and portfolio project over ~3 weeks in early 2026.
+
+**Built with Claude Code** — AI-assisted development for the full stack: components, API integration, security audit, performance optimization, and deployment.
