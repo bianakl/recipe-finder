@@ -1911,52 +1911,87 @@ export const COOK_TIME_OPTIONS = [
   { id: 'slow', label: '60+ min', min: 60, icon: '🍲' },
 ];
 
+// Ingredient keyword lists for dietary tag inference on API results
+const MEAT_KEYWORDS = ['chicken', 'beef', 'pork', 'lamb', 'turkey', 'duck', 'veal', 'venison', 'bison', 'bacon', 'ham', 'sausage', 'chorizo', 'salami', 'pepperoni', 'prosciutto', 'pancetta', 'lard', 'gelatin', 'mince', 'minced meat'];
+const SEAFOOD_KEYWORDS = ['fish', 'salmon', 'tuna', 'cod', 'shrimp', 'prawn', 'lobster', 'crab', 'clam', 'mussel', 'oyster', 'squid', 'octopus', 'anchovy', 'sardine', 'mackerel', 'tilapia', 'bass', 'trout', 'halibut', 'snapper', 'haddock', 'monkfish'];
+const SHELLFISH_KEYWORDS = ['shrimp', 'prawn', 'lobster', 'crab', 'clam', 'mussel', 'oyster', 'scallop', 'crayfish'];
+const PORK_KEYWORDS = ['pork', 'bacon', 'ham', 'salami', 'chorizo', 'sausage', 'prosciutto', 'pancetta', 'lard', 'pepperoni'];
+const DAIRY_KEYWORDS = ['butter', 'milk', 'cream', 'cheese', 'yogurt', 'yoghurt', 'ghee', 'brie', 'cheddar', 'mozzarella', 'parmesan', 'ricotta', 'sour cream', 'evaporated milk', 'condensed milk', 'half-and-half'];
+const GLUTEN_KEYWORDS = ['flour', 'wheat', 'bread', 'breadcrumb', 'pasta', 'soy sauce', 'barley', 'rye', 'spelt', 'semolina', 'couscous', 'bulgur', 'beer', 'noodle', 'tortilla', 'pita', 'baguette'];
+const EGG_KEYWORDS = ['egg', 'mayonnaise', 'mayo'];
+const NUT_KEYWORDS = ['almond', 'cashew', 'walnut', 'pecan', 'pistachio', 'hazelnut', 'macadamia', 'pine nut', 'peanut'];
+
+function getIngredients(recipe) {
+  const ings = [];
+  for (let i = 1; i <= 20; i++) {
+    const ing = recipe[`strIngredient${i}`];
+    if (ing && ing.trim()) ings.push(ing.toLowerCase().trim());
+  }
+  return ings;
+}
+
+function hasAny(ingredients, keywords) {
+  return ingredients.some(ing => keywords.some(kw => ing.includes(kw)));
+}
+
+// Infer dietary tags from a recipe's ingredient list (for API results that lack explicit tags)
+export function inferDietaryTags(recipe) {
+  const ings = getIngredients(recipe);
+  if (!ings.length) return [];
+
+  const hasMeat = hasAny(ings, MEAT_KEYWORDS);
+  const hasSeafood = hasAny(ings, SEAFOOD_KEYWORDS);
+  const hasShellfish = hasAny(ings, SHELLFISH_KEYWORDS);
+  const hasPork = hasAny(ings, PORK_KEYWORDS);
+  const hasDairy = hasAny(ings, DAIRY_KEYWORDS);
+  const hasGluten = hasAny(ings, GLUTEN_KEYWORDS);
+  const hasEggs = hasAny(ings, EGG_KEYWORDS);
+  const hasNuts = hasAny(ings, NUT_KEYWORDS);
+
+  const tags = [];
+  if (!hasMeat && !hasSeafood) tags.push('vegetarian');
+  if (!hasMeat && !hasSeafood && !hasDairy && !hasEggs) tags.push('vegan');
+  if (!hasMeat) tags.push('pescatarian'); // no land meat; seafood OK
+  if (!hasGluten) tags.push('gluten-free');
+  if (!hasDairy) tags.push('dairy-free');
+  if (!hasEggs) tags.push('egg-free');
+  if (!hasNuts) tags.push('nut-free');
+  if (!hasShellfish) tags.push('shellfish-free');
+  if (!hasPork) tags.push('halal'); // pork-free as proxy; can't verify slaughter method
+  return tags;
+}
+
 export async function searchRecipes(query, filters = {}) {
   if (!query.trim() && !filters.ingredients?.length) return [];
 
   try {
-    let results = [];
+    let apiResults = [];
 
-    // API search
+    // Live API search
     if (query.trim()) {
       const response = await fetch(`${BASE_URL}/search.php?s=${encodeURIComponent(query)}`);
       const data = await response.json();
-      results = data.meals || [];
+      // Enrich API results with inferred dietary tags so filtering works
+      apiResults = (data.meals || []).map(r => ({
+        ...r,
+        dietary: inferDietaryTags(r),
+      }));
     }
 
-    // Also search mock recipes
+    // Mock recipe search
     const lowerQuery = query.toLowerCase();
-    let mockResults = MOCK_RECIPES.filter(r =>
+    const mockResults = MOCK_RECIPES.filter(r =>
       r.strMeal.toLowerCase().includes(lowerQuery) ||
       r.strCategory.toLowerCase().includes(lowerQuery) ||
       r.strArea.toLowerCase().includes(lowerQuery) ||
       (r.strTags && r.strTags.toLowerCase().includes(lowerQuery))
     );
 
-    // Apply filters to mock results
-    if (filters.dietary?.length) {
-      mockResults = mockResults.filter(r =>
-        filters.dietary.every(d => r.dietary?.includes(d))
-      );
-    }
+    // Combine, deduplicating by name (API results take priority as source of truth)
+    const apiNames = new Set(apiResults.map(r => r.strMeal.toLowerCase()));
+    const uniqueMockResults = mockResults.filter(r => !apiNames.has(r.strMeal.toLowerCase()));
 
-    if (filters.cuisine) {
-      mockResults = mockResults.filter(r => r.strArea === filters.cuisine);
-    }
-
-    if (filters.cookTime) {
-      const timeFilter = COOK_TIME_OPTIONS.find(o => o.id === filters.cookTime);
-      if (timeFilter) {
-        mockResults = mockResults.filter(r => {
-          if (timeFilter.max && r.cookTime > timeFilter.max) return false;
-          if (timeFilter.min && r.cookTime < timeFilter.min) return false;
-          return true;
-        });
-      }
-    }
-
-    // Combine results
-    return [...results, ...mockResults];
+    return [...apiResults, ...uniqueMockResults];
   } catch (_err) {
     // Fallback to mock data on network error
     const lowerQuery = query.toLowerCase();
@@ -1978,55 +2013,80 @@ export function ingredientMatchesPantry(ingredientName, pantryItems) {
   });
 }
 
+function scoreRecipeAgainstPantry(recipe, pantryItems) {
+  const recipeIngredients = getIngredients(recipe);
+  const matched = recipeIngredients.filter(ing => ingredientMatchesPantry(ing, pantryItems));
+  const missing = recipeIngredients.filter(ing => !ingredientMatchesPantry(ing, pantryItems));
+  const matchScore = recipeIngredients.length > 0 ? matched.length / recipeIngredients.length : 0;
+  return {
+    ...recipe,
+    dietary: recipe.dietary || inferDietaryTags(recipe),
+    matchScore,
+    matchedCount: matched.length,
+    totalIngredients: recipeIngredients.length,
+    matchedIngredients: matched,
+    missingIngredients: missing,
+  };
+}
+
 // Smart pantry search - returns recipes ranked by ingredient match percentage
-export function searchByPantry(pantryItems) {
+// Searches both mock recipes and the live TheMealDB API
+export async function searchByPantry(pantryItems) {
   if (!pantryItems || !pantryItems.length) return [];
 
-  const results = MOCK_RECIPES.map(recipe => {
-    // Extract all recipe ingredients
-    const recipeIngredients = [];
-    for (let i = 1; i <= 20; i++) {
-      const ing = recipe[`strIngredient${i}`];
-      if (ing && ing.trim()) {
-        recipeIngredients.push(ing.trim());
+  // Score mock recipes locally (instant)
+  const mockScored = MOCK_RECIPES.map(r => scoreRecipeAgainstPantry(r, pantryItems));
+
+  // Fetch API results for each pantry item in parallel, deduplicate by idMeal
+  let apiRecipes = [];
+  try {
+    const fetches = pantryItems.slice(0, 5).map(item =>
+      fetch(`${BASE_URL}/filter.php?i=${encodeURIComponent(item)}`)
+        .then(r => r.json())
+        .then(d => d.meals || [])
+        .catch(() => [])
+    );
+    const allFetched = await Promise.all(fetches);
+    const seen = new Set();
+    for (const batch of allFetched) {
+      for (const r of batch) {
+        if (!seen.has(r.idMeal)) {
+          seen.add(r.idMeal);
+          apiRecipes.push(r);
+        }
       }
     }
+  } catch (_err) {
+    // API unavailable — fall through to mock-only results
+  }
 
-    // Count matched and missing ingredients
-    const matched = [];
-    const missing = [];
+  // The filter API returns summary objects (no ingredients) — fetch full details for top candidates
+  const mockIds = new Set(MOCK_RECIPES.map(r => r.idMeal));
+  const newApiIds = apiRecipes.map(r => r.idMeal).filter(id => !mockIds.has(id)).slice(0, 20);
 
-    recipeIngredients.forEach(recipeIng => {
-      if (ingredientMatchesPantry(recipeIng, pantryItems)) {
-        matched.push(recipeIng);
-      } else {
-        missing.push(recipeIng);
-      }
-    });
+  let apiScored = [];
+  if (newApiIds.length) {
+    const details = await Promise.all(
+      newApiIds.map(id =>
+        fetch(`${BASE_URL}/lookup.php?i=${id}`)
+          .then(r => r.json())
+          .then(d => d.meals?.[0] || null)
+          .catch(() => null)
+      )
+    );
+    apiScored = details
+      .filter(Boolean)
+      .map(r => scoreRecipeAgainstPantry(r, pantryItems));
+  }
 
-    const totalIngredients = recipeIngredients.length;
-    const matchedCount = matched.length;
-    const matchScore = totalIngredients > 0 ? matchedCount / totalIngredients : 0;
-
-    return {
-      ...recipe,
-      matchScore,
-      matchedCount,
-      totalIngredients,
-      matchedIngredients: matched,
-      missingIngredients: missing,
-    };
-  });
-
-  // Filter to only recipes with at least one match, then sort by match score
-  return results
+  // Merge, filter to at least one match, sort by score
+  return [...mockScored, ...apiScored]
     .filter(r => r.matchedCount > 0)
-    .sort((a, b) => {
-      // Primary: match score descending
-      if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
-      // Secondary: more matched ingredients
-      return b.matchedCount - a.matchedCount;
-    });
+    .sort((a, b) =>
+      b.matchScore !== a.matchScore
+        ? b.matchScore - a.matchScore
+        : b.matchedCount - a.matchedCount
+    );
 }
 
 export async function getRecipeById(id) {

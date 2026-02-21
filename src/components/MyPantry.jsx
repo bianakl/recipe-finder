@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
 import { searchByPantry } from '../services/api';
@@ -26,10 +26,19 @@ export function MyPantry({ onRecipeClick }) {
   const { pantry, addToPantry, removeFromPantry, clearPantry, isInPantry } = useRecipes();
   const [customIngredient, setCustomIngredient] = useState('');
 
-  // Calculate matching recipes whenever pantry changes
-  const matchingRecipes = useMemo(() => {
-    if (pantry.length === 0) return [];
-    return searchByPantry(pantry);
+  const [matchingRecipes, setMatchingRecipes] = useState([]);
+  const [isPantrySearching, setIsPantrySearching] = useState(false);
+
+  useEffect(() => {
+    if (pantry.length === 0) {
+      setMatchingRecipes([]); // eslint-disable-line react-hooks/set-state-in-effect
+      return;
+    }
+    setIsPantrySearching(true); // eslint-disable-line react-hooks/set-state-in-effect
+    searchByPantry(pantry).then(results => {
+      setMatchingRecipes(results);
+      setIsPantrySearching(false);
+    });
   }, [pantry]);
 
   const addCustomIngredient = () => {
@@ -168,7 +177,7 @@ export function MyPantry({ onRecipeClick }) {
             <span>🍳</span>
             Recipes You Can Make
             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-              ({matchingRecipes.length} found)
+              {isPantrySearching ? 'searching…' : `(${matchingRecipes.length} found)`}
             </span>
           </h3>
 
