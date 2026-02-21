@@ -1961,6 +1961,52 @@ export function inferDietaryTags(recipe) {
   return tags;
 }
 
+// Fetch all meal categories from TheMealDB
+export async function fetchCategories() {
+  try {
+    const res = await fetch(`${BASE_URL}/categories.php`);
+    const data = await res.json();
+    return data.categories || [];
+  } catch { return []; }
+}
+
+// Fetch recipe summaries by category name
+export async function fetchByCategory(category) {
+  try {
+    const res = await fetch(`${BASE_URL}/filter.php?c=${encodeURIComponent(category)}`);
+    const data = await res.json();
+    return data.meals || [];
+  } catch { return []; }
+}
+
+// Fetch recipe summaries by cuisine area
+export async function fetchByCuisine(area) {
+  try {
+    const res = await fetch(`${BASE_URL}/filter.php?a=${encodeURIComponent(area)}`);
+    const data = await res.json();
+    return data.meals || [];
+  } catch { return []; }
+}
+
+// Fetch (or restore from localStorage cache) the daily featured recipe
+export async function fetchDailyRecipe() {
+  const today = new Date().toDateString();
+  try {
+    const cached = localStorage.getItem('recipe-finder-daily');
+    if (cached) {
+      const { date, recipe } = JSON.parse(cached);
+      if (date === today) return recipe;
+    }
+    const res = await fetch(`${BASE_URL}/random.php`);
+    const data = await res.json();
+    const recipe = data.meals?.[0] || null;
+    if (recipe) {
+      localStorage.setItem('recipe-finder-daily', JSON.stringify({ date: today, recipe }));
+    }
+    return recipe;
+  } catch { return null; }
+}
+
 export async function searchRecipes(query, filters = {}) {
   if (!query.trim() && !filters.ingredients?.length) return [];
 

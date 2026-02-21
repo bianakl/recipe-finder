@@ -15,6 +15,7 @@ import { DataManager } from './components/DataManager';
 import { Settings } from './components/Settings';
 import { FilterBar } from './components/FilterBar';
 import { EmptyState } from './components/EmptyState';
+import { BrowseRecipes } from './components/BrowseRecipes';
 import { SkeletonGrid } from './components/SkeletonCard';
 import { Walkthrough, ExploreButton } from './components/Walkthrough';
 import { AuthModal } from './components/AuthModal';
@@ -182,7 +183,7 @@ function App() {
               {isLoading && <SkeletonGrid count={6} />}
 
               {!isLoading && !hasSearched && (
-                <EmptyState type="search" />
+                <BrowseRecipes onRecipeClick={handleRecipeClick} />
               )}
 
               {!isLoading && hasSearched && filteredResults.length === 0 && (
