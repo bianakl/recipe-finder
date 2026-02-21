@@ -1,18 +1,8 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from './components/Header';
 import { RecipeGrid } from './components/RecipeGrid';
 import { RecipeDrawer } from './components/RecipeDrawer';
-import { SavedRecipes } from './components/SavedRecipes';
-import { MealPlanner } from './components/MealPlanner';
-import { ShoppingList } from './components/ShoppingList';
-import { NutritionDashboard } from './components/NutritionDashboard';
-import { CookingHistory } from './components/CookingHistory';
-import { MealSuggestions } from './components/MealSuggestions';
-import { IngredientsExplorer } from './components/IngredientsExplorer';
-import { MyPantry } from './components/MyPantry';
-import { DataManager } from './components/DataManager';
-import { Settings } from './components/Settings';
 import { FilterBar } from './components/FilterBar';
 import { EmptyState } from './components/EmptyState';
 import { BrowseRecipes } from './components/BrowseRecipes';
@@ -21,7 +11,27 @@ import { Walkthrough, ExploreButton } from './components/Walkthrough';
 import { AuthModal } from './components/AuthModal';
 import { ConsentBanner } from './components/ConsentBanner';
 import { PremiumGate } from './components/PremiumGate';
-import { PrivacyPolicy } from './components/PrivacyPolicy';
+
+// Heavy tabs — lazy loaded so they don't bloat the initial bundle
+const SavedRecipes      = lazy(() => import('./components/SavedRecipes').then(m => ({ default: m.SavedRecipes })));
+const MealPlanner       = lazy(() => import('./components/MealPlanner').then(m => ({ default: m.MealPlanner })));
+const ShoppingList      = lazy(() => import('./components/ShoppingList').then(m => ({ default: m.ShoppingList })));
+const NutritionDashboard = lazy(() => import('./components/NutritionDashboard').then(m => ({ default: m.NutritionDashboard })));
+const CookingHistory    = lazy(() => import('./components/CookingHistory').then(m => ({ default: m.CookingHistory })));
+const MealSuggestions   = lazy(() => import('./components/MealSuggestions').then(m => ({ default: m.MealSuggestions })));
+const IngredientsExplorer = lazy(() => import('./components/IngredientsExplorer').then(m => ({ default: m.IngredientsExplorer })));
+const MyPantry          = lazy(() => import('./components/MyPantry').then(m => ({ default: m.MyPantry })));
+const DataManager       = lazy(() => import('./components/DataManager').then(m => ({ default: m.DataManager })));
+const Settings          = lazy(() => import('./components/Settings').then(m => ({ default: m.Settings })));
+const PrivacyPolicy     = lazy(() => import('./components/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
+
+function TabFallback() {
+  return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 import { useAuth } from './context/AuthContext';
 import { useRecipes } from './context/RecipeContext';
 import { usePremium } from './hooks/usePremium';
@@ -197,134 +207,94 @@ function App() {
           )}
 
           {activeTab === 'pantry' && (
-            <motion.div
-              key="pantry"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PremiumGate featureId="pantry">
-                <MyPantry onRecipeClick={handleRecipeClick} />
-              </PremiumGate>
+            <motion.div key="pantry" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <PremiumGate featureId="pantry">
+                  <MyPantry onRecipeClick={handleRecipeClick} />
+                </PremiumGate>
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'saved' && (
-            <motion.div
-              key="saved"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <SavedRecipes onRecipeClick={handleRecipeClick} />
+            <motion.div key="saved" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <SavedRecipes onRecipeClick={handleRecipeClick} />
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'planner' && (
-            <motion.div
-              key="planner"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PremiumGate featureId="planner">
-                <MealPlanner onRecipeClick={handleRecipeClick} />
-              </PremiumGate>
+            <motion.div key="planner" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <PremiumGate featureId="planner">
+                  <MealPlanner onRecipeClick={handleRecipeClick} />
+                </PremiumGate>
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'shopping' && (
-            <motion.div
-              key="shopping"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PremiumGate featureId="shopping">
-                <ShoppingList />
-              </PremiumGate>
+            <motion.div key="shopping" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <PremiumGate featureId="shopping">
+                  <ShoppingList />
+                </PremiumGate>
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'nutrition' && (
-            <motion.div
-              key="nutrition"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PremiumGate featureId="nutrition">
-                <NutritionDashboard />
-              </PremiumGate>
+            <motion.div key="nutrition" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <PremiumGate featureId="nutrition">
+                  <NutritionDashboard />
+                </PremiumGate>
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'history' && (
-            <motion.div
-              key="history"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <CookingHistory onRecipeClick={handleRecipeClick} />
+            <motion.div key="history" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <CookingHistory onRecipeClick={handleRecipeClick} />
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'suggestions' && (
-            <motion.div
-              key="suggestions"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <MealSuggestions onRecipeClick={handleRecipeClick} />
+            <motion.div key="suggestions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <MealSuggestions onRecipeClick={handleRecipeClick} />
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'ingredients' && (
-            <motion.div
-              key="ingredients"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <IngredientsExplorer />
+            <motion.div key="ingredients" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <IngredientsExplorer />
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'data' && (
-            <motion.div
-              key="data"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <DataManager />
+            <motion.div key="data" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                <DataManager />
+              </Suspense>
             </motion.div>
           )}
 
           {activeTab === 'settings' && (
-            <motion.div
-              key="settings"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {showPrivacyPolicy ? (
-                <PrivacyPolicy onBack={() => setShowPrivacyPolicy(false)} />
-              ) : (
-                <Settings onShowPrivacyPolicy={() => setShowPrivacyPolicy(true)} />
-              )}
+            <motion.div key="settings" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+              <Suspense fallback={<TabFallback />}>
+                {showPrivacyPolicy ? (
+                  <PrivacyPolicy onBack={() => setShowPrivacyPolicy(false)} />
+                ) : (
+                  <Settings onShowPrivacyPolicy={() => setShowPrivacyPolicy(true)} />
+                )}
+              </Suspense>
             </motion.div>
           )}
         </AnimatePresence>
