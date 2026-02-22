@@ -1988,9 +1988,22 @@ export async function fetchByCuisine(area) {
   } catch { return []; }
 }
 
-// Fetch (or restore from localStorage cache) the daily featured recipe
+// Fetch the daily featured recipe.
+// In production: served from the server-side cron endpoint so all users
+// see the same recipe. Falls back to direct TheMealDB + localStorage in dev.
 export async function fetchDailyRecipe() {
   const today = new Date().toDateString();
+
+  // 1. Try the server-side endpoint (Vercel API route + cron)
+  try {
+    const res = await fetch('/api/daily-recipe');
+    if (res.ok) {
+      const recipe = await res.json();
+      if (recipe?.idMeal) return recipe;
+    }
+  } catch { /* not in production — fall through */ }
+
+  // 2. Local fallback: check localStorage, then hit TheMealDB directly
   try {
     const cached = localStorage.getItem('recipe-finder-daily');
     if (cached) {

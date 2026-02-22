@@ -128,9 +128,24 @@ create table user_settings (
   updated_at timestamptz default now()
 );
 
+-- 11. Daily Recipe (populated by server-side cron job, public read)
+create table daily_recipe (
+  id serial primary key,
+  date date unique not null,
+  recipe jsonb not null,
+  created_at timestamptz default now()
+);
+
 -- ==========================================
 -- Row Level Security (RLS)
 -- ==========================================
+
+alter table daily_recipe enable row level security;
+
+-- Anyone can read the daily recipe (no login required)
+create policy "Anyone can read daily recipe" on daily_recipe
+  for select using (true);
+-- Inserts/updates done via service role key in the API route — bypasses RLS
 
 alter table profiles enable row level security;
 alter table consent_records enable row level security;
