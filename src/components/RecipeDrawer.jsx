@@ -41,6 +41,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
     getRecipeById: getRecipeFromContext,
     pantry,
     addToPantry,
+    removeFromPantry,
     addToShoppingList,
   } = useRecipes();
 
@@ -597,9 +598,29 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
                                 <span className="font-semibold text-gray-900 dark:text-white">{convertedMeasure}</span> {item.ingredient}
                               </span>
                               {hasPantry && item.inPantry && (
-                                <span className="text-xs font-medium text-green-600 dark:text-green-400 whitespace-nowrap">
-                                  In pantry
-                                </span>
+                                <div className="flex items-center gap-1 shrink-0">
+                                  <span className="text-xs font-medium text-green-600 dark:text-green-400 whitespace-nowrap">
+                                    In pantry
+                                  </span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                      removeFromPantry(item.ingredient);
+                                      setLocalPantryAdds(prev => {
+                                        const next = new Set(prev);
+                                        next.delete(item.ingredient.toLowerCase());
+                                        return next;
+                                      });
+                                    }}
+                                    title="Remove from pantry"
+                                    className="w-5 h-5 rounded-md text-green-400 dark:text-green-600 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400 flex items-center justify-center transition-colors"
+                                  >
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </button>
+                                </div>
                               )}
                               {hasPantry && !item.inPantry && !item.addedToList && (
                                 <div className="flex items-center gap-2 shrink-0">
