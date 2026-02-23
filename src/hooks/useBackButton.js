@@ -42,16 +42,19 @@ export function useBackButton(isOpen, onClose, stateKey = 'modal') {
  * Hook for tab-based navigation with history support
  */
 export function useTabHistory(activeTab, setActiveTab, defaultTab = 'search') {
-  // Handle initial load from URL hash
+  const ALL_TABS = ['search', 'saved', 'planner', 'shopping', 'nutrition', 'history', 'suggestions', 'ingredients', 'pantry', 'data', 'settings'];
+
+  // Handle initial load from URL hash (skip recipe hashes — App.jsx handles those)
   useEffect(() => {
     const hash = window.location.hash.slice(1);
-    if (hash && ['search', 'saved', 'planner', 'nutrition', 'ingredients'].includes(hash)) {
+    if (!hash.startsWith('recipe/') && ALL_TABS.includes(hash)) {
       setActiveTab(hash);
     }
-  }, [setActiveTab]);
+  }, [setActiveTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update URL hash when tab changes
+  // Update URL hash when tab changes (only if a recipe isn't currently open)
   useEffect(() => {
+    if (window.location.hash.startsWith('#recipe/')) return;
     const newHash = `#${activeTab}`;
     if (window.location.hash !== newHash) {
       window.history.pushState({ tab: activeTab }, '', newHash);
@@ -62,7 +65,9 @@ export function useTabHistory(activeTab, setActiveTab, defaultTab = 'search') {
   useEffect(() => {
     const handlePopState = (event) => {
       const hash = window.location.hash.slice(1);
-      if (hash && ['search', 'saved', 'planner', 'nutrition', 'ingredients'].includes(hash)) {
+      // Recipe-hash navigation is handled by useBackButton — skip here
+      if (hash.startsWith('recipe/')) return;
+      if (ALL_TABS.includes(hash)) {
         setActiveTab(hash);
       } else if (event.state?.tab) {
         setActiveTab(event.state.tab);

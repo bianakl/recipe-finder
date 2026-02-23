@@ -4,11 +4,27 @@ import { useSupabaseSync } from './useSupabaseSync';
 
 const SETTINGS_KEY = 'recipe-finder-settings';
 
+// Detect the locale-appropriate week start using Intl.Locale where supported,
+// falling back to a language-code heuristic. Sunday-first: US, Canada, Israel,
+// most Arabic and East-Asian locales. Monday-first everywhere else.
+function detectWeekStart() {
+  try {
+    const locale = new Intl.Locale(navigator.language);
+    if (locale.weekInfo?.firstDay !== undefined) {
+      return locale.weekInfo.firstDay === 7 ? 'sunday' : 'monday';
+    }
+  } catch { /* Intl.Locale or weekInfo not supported */ }
+  const lang = (navigator.language || '').toLowerCase();
+  const sundayFirst = ['en-us', 'en-ca', 'he', 'ar', 'zh-cn', 'zh-tw', 'ko', 'ja'];
+  return sundayFirst.some(l => lang.startsWith(l)) ? 'sunday' : 'monday';
+}
+
 const DEFAULT_SETTINGS = {
   measurementSystem: 'imperial', // 'imperial' or 'metric'
   temperatureUnit: 'fahrenheit', // 'fahrenheit' or 'celsius'
   defaultServings: 4,
   dietaryPreferences: [], // persisted dietary tags (e.g. ['vegan', 'gluten-free'])
+  weekStartDay: detectWeekStart(), // 'monday' or 'sunday'
 };
 
 const SettingsContext = createContext(null);

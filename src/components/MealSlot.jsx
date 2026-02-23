@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-export function MealSlot({ recipe, onAdd, onRemove, onView, draggable, onDragStart, onDragEnd }) {
+export function MealSlot({ recipe, onAdd, onRemove, onView, draggable, onDragStart, onDragEnd, onMarkCooked, isCooked }) {
   if (!recipe) {
     return (
       <motion.button
@@ -46,7 +46,10 @@ export function MealSlot({ recipe, onAdd, onRemove, onView, draggable, onDragSta
         alt={recipe.strMeal}
         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+      <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-colors duration-300 ${isCooked ? 'mix-blend-normal bg-green-900/20' : ''}`} />
+      {isCooked && (
+        <div className="absolute inset-0 bg-green-900/20 pointer-events-none" />
+      )}
 
       {/* Drag handle - hidden on mobile (drag doesn't work well), visible on desktop hover */}
       {draggable && (
@@ -71,25 +74,47 @@ export function MealSlot({ recipe, onAdd, onRemove, onView, draggable, onDragSta
         </div>
       )}
 
-      <p className="absolute bottom-2 left-2 right-8 text-white text-xs font-bold line-clamp-2 drop-shadow-lg">
+      <p className="absolute bottom-2 left-2 right-2 text-white text-xs font-bold line-clamp-2 drop-shadow-lg">
         {recipe.strMeal}
       </p>
 
-      {/* Delete button - always visible on mobile, hover on desktop */}
-      <motion.button
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove();
-        }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9, backgroundColor: 'rgb(239 68 68)' }}
-        className="absolute top-2 right-2 w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-red-500/80 sm:bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500 transition-all duration-200 shadow-lg"
-        aria-label="Remove from meal plan"
-      >
-        <svg className="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
-      </motion.button>
+      {/* Action buttons — top right */}
+      <div className="absolute top-2 right-2 flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
+        {/* Mark as cooked */}
+        {isCooked ? (
+          <div className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-green-500 backdrop-blur-sm flex items-center justify-center shadow-lg">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        ) : (
+          <motion.button
+            onClick={(e) => { e.stopPropagation(); onMarkCooked?.(); }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-green-500 transition-colors duration-200 shadow-lg"
+            aria-label="Mark as cooked"
+            title="Mark as cooked"
+          >
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          </motion.button>
+        )}
+
+        {/* Remove */}
+        <motion.button
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="w-8 h-8 sm:w-7 sm:h-7 rounded-lg bg-red-500/80 sm:bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-red-500 transition-colors duration-200 shadow-lg"
+          aria-label="Remove from meal plan"
+        >
+          <svg className="w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </motion.button>
+      </div>
     </motion.div>
   );
 }

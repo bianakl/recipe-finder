@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from './components/Header';
 import { RecipeGrid } from './components/RecipeGrid';
@@ -38,7 +38,7 @@ import { usePremium } from './hooks/usePremium';
 import { useSettings } from './hooks/useSettings';
 import { useRecipeSearch } from './hooks/useRecipeSearch';
 import { useTabHistory, useBackButton } from './hooks/useBackButton';
-import { filterRecipes } from './services/api';
+import { filterRecipes, getRecipeById } from './services/api';
 
 const tabs = [
   { id: 'search', label: 'Discover', icon: '✨' },
@@ -87,6 +87,27 @@ function App() {
   const handleRecipeClick = (recipe) => {
     setSelectedRecipe(recipe);
   };
+
+  // Deep link: on first load open recipe if URL is #recipe/{id}
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash.startsWith('recipe/')) {
+      const id = hash.split('/')[1];
+      getRecipeById(id).then(recipe => { if (recipe) setSelectedRecipe(recipe); }).catch(() => {});
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keep URL in sync with open recipe
+  useEffect(() => {
+    if (selectedRecipe) {
+      const target = `#recipe/${selectedRecipe.idMeal}`;
+      if (window.location.hash !== target) {
+        window.history.replaceState(window.history.state, '', target);
+      }
+    } else if (window.location.hash.startsWith('#recipe/')) {
+      window.history.replaceState(window.history.state, '', `#${activeTab}`);
+    }
+  }, [selectedRecipe, activeTab]);
 
   // Browser history integration for tabs
   useTabHistory(activeTab, setActiveTab, 'search');

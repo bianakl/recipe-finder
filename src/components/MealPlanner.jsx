@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { useRecipes } from '../context/RecipeContext';
+import { useSettings } from '../hooks/useSettings.jsx';
 import { MealSlot } from './MealSlot';
 
 const DAY_LABELS = {
@@ -39,14 +40,37 @@ const MEAL_LABELS = {
   dinner: 'Dinner'
 };
 
+const WEEKEND = new Set(['saturday', 'sunday']);
+
 export function MealPlanner({ onRecipeClick }) {
-  const { savedRecipes, mealPlan, DAYS, MEALS, addToMealPlan, removeFromMealPlan, clearMealPlan, clearDayPlan, swapMeals, getRecipeById } = useRecipes();
+  const { savedRecipes, mealPlan, DAYS, MEALS, addToMealPlan, removeFromMealPlan, clearMealPlan, clearDayPlan, swapMeals, getRecipeById, addToCookingHistory, setRecipeRating } = useRecipes();
+  const { settings } = useSettings();
+
+  // Reorder DAYS so the week starts on the configured day
+  const orderedDays = useMemo(() => {
+    if (settings.weekStartDay === 'sunday') {
+      const idx = DAYS.indexOf('sunday');
+      return idx === -1 ? DAYS : [...DAYS.slice(idx), ...DAYS.slice(0, idx)];
+    }
+    const idx = DAYS.indexOf('monday');
+    return idx === -1 ? DAYS : [...DAYS.slice(idx), ...DAYS.slice(0, idx)];
+  }, [DAYS, settings.weekStartDay]);
 
   // Check if a day has any meals
   const dayHasMeals = (day) => MEALS.some(meal => mealPlan?.[day]?.[meal]);
   const [selectingSlot, setSelectingSlot] = useState(null);
   const [draggedItem, setDraggedItem] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
+  // Tracks which day-meal slots have been marked cooked this session
+  const [cookedSlots, setCookedSlots] = useState(new Set());
+  // Rating prompt: { day, meal, recipeId } or null
+  const [ratingSlot, setRatingSlot] = useState(null);
+
+  const handleMarkCooked = (day, meal, recipeId) => {
+    addToCookingHistory(recipeId);
+    setCookedSlots(prev => new Set([...prev, `${day}-${meal}`]));
+    setRatingSlot({ day, meal, recipeId });
+  };
 
   const hasAnyMeals = DAYS.some(day =>
     MEALS.some(meal => mealPlan?.[day]?.[meal])
@@ -150,15 +174,19 @@ export function MealPlanner({ onRecipeClick }) {
         <div className="min-w-[900px]">
           <div className="grid grid-cols-8 gap-3">
             <div className="col-span-1" />
-            {DAYS.map((day, i) => (
+            {orderedDays.map((day, i) => (
               <motion.div
                 key={day}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="text-center"
+                className={`text-center rounded-t-xl pt-1 pb-1 ${WEEKEND.has(day) ? 'bg-violet-50 dark:bg-violet-900/10' : ''}`}
               >
-                <span className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <span className={`text-sm font-bold uppercase tracking-wider ${
+                  WEEKEND.has(day)
+                    ? 'text-violet-500 dark:text-violet-400'
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}>
                   {DAY_LABELS[day]}
                 </span>
                 {dayHasMeals(day) && (
@@ -187,7 +215,7 @@ export function MealPlanner({ onRecipeClick }) {
                     {MEAL_LABELS[meal]}
                   </div>
                 </motion.div>
-                {DAYS.map((day, dayIndex) => {
+                {orderedDays.map((day, dayIndex) => {
                   const recipeId = mealPlan?.[day]?.[meal];
                   const recipe = recipeId ? getRecipeById(recipeId) : null;
                   const isDragTarget = dropTarget?.day === day && dropTarget?.meal === meal;
@@ -201,8 +229,9 @@ export function MealPlanner({ onRecipeClick }) {
                       transition={{ delay: (dayIndex + mealIndex * 7) * 0.02 }}
                       onDragOver={(e) => handleDragOver(e, day, meal)}
                       onDrop={(e) => handleDrop(e, day, meal)}
-                      className={`transition-all ${
-                        isDragTarget ? 'ring-2 ring-brand-500 ring-offset-2 rounded-xl' : ''
+                      className={`relative transition-all rounded-xl ${
+                        WEEKEND.has(day) ? 'bg-violet-50 dark:bg-violet-900/10 p-0.5' : ''
+                      } ${isDragTarget ? 'ring-2 ring-brand-500 ring-offset-2' : ''
                       } ${isDragging ? 'opacity-50' : ''}`}
                     >
                       <MealSlot
@@ -213,7 +242,45 @@ export function MealPlanner({ onRecipeClick }) {
                         draggable={!!recipe}
                         onDragStart={() => recipe && handleDragStart(day, meal, recipe)}
                         onDragEnd={handleDragEnd}
+                        onMarkCooked={() => recipe && handleMarkCooked(day, meal, recipe.idMeal)}
+                        isCooked={cookedSlots.has(`${day}-${meal}`)}
                       />
+                      {/* Post-cook star rating prompt */}
+                      <AnimatePresence>
+                        {ratingSlot?.day === day && ratingSlot?.meal === meal && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.85 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.85 }}
+                            className="absolute inset-0 z-10 bg-black/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center gap-1 p-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <p className="text-white text-[10px] font-semibold">How was it?</p>
+                            <div className="flex gap-0.5">
+                              {[1, 2, 3, 4, 5].map(star => (
+                                <motion.button
+                                  key={star}
+                                  whileHover={{ scale: 1.3 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => {
+                                    setRecipeRating(ratingSlot.recipeId, star);
+                                    setRatingSlot(null);
+                                  }}
+                                  className="text-base leading-none"
+                                >
+                                  ⭐
+                                </motion.button>
+                              ))}
+                            </div>
+                            <button
+                              onClick={() => setRatingSlot(null)}
+                              className="text-gray-400 text-[9px] hover:text-white transition-colors mt-0.5"
+                            >
+                              skip
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </motion.div>
                   );
                 })}

@@ -7,6 +7,117 @@ import { getRecipeById, parseIngredients, scaleIngredients, ingredientMatchesPan
 import { StarRating } from './StarRating';
 import { PricingModal } from './PricingModal';
 
+// Build a human-readable description from TheMealDB metadata + ingredient list.
+// Generates a sentence like "Chicken Teriyaki Bowl is a Japanese chicken dish made with chicken breast, soy sauce, and rice."
+function buildDescription(recipe, ingredients = []) {
+  if (!recipe) return null;
+  const article = /^[aeiou]/i.test(recipe.strArea || '') ? 'an' : 'a';
+  let sentence = '';
+  if (recipe.strArea && recipe.strCategory) {
+    sentence = `${recipe.strMeal} is ${article} ${recipe.strArea} ${recipe.strCategory.toLowerCase()} dish`;
+  } else if (recipe.strCategory) {
+    sentence = `${recipe.strMeal} is a ${recipe.strCategory.toLowerCase()} dish`;
+  } else if (recipe.strArea) {
+    sentence = `${recipe.strMeal} is a dish from ${recipe.strArea}`;
+  } else {
+    return null;
+  }
+  if (ingredients.length > 0) {
+    const names = ingredients.slice(0, 3).map(i => i.ingredient);
+    if (names.length === 1) {
+      sentence += ` made with ${names[0]}`;
+    } else if (names.length === 2) {
+      sentence += ` made with ${names[0]} and ${names[1]}`;
+    } else {
+      sentence += ` made with ${names[0]}, ${names[1]}, and ${names[2]}`;
+    }
+  }
+  return sentence + '.';
+}
+
+const PREP_WORDS = ['chop', 'dice', 'mince', 'slice', 'cut ', 'trim', 'peel', 'grate', 'shred', 'julienne', 'halve', 'quarter', 'cube', 'crumble', 'mash', 'crush', 'grind', 'marinate', 'soak', 'brine', 'wash', 'rinse', 'pound', 'flatten', 'combine', 'mix together', 'whisk together', 'stir together'];
+const COOK_WORDS = ['heat', 'fry', 'sauté', 'saute', 'boil', 'simmer', 'roast', 'bake', 'grill', 'sear', 'brown', 'reduce', 'serve', 'toast', 'cook', 'deep-fry', 'stir-fry'];
+
+function stepPhase(text) {
+  const lower = text.toLowerCase();
+  const hasCook = COOK_WORDS.some(w => lower.includes(w));
+  const hasPrep = PREP_WORDS.some(w => lower.includes(w));
+  if (hasPrep && !hasCook) return 'prep';
+  return 'cook';
+}
+
+// Returns null or an object { label, hours } describing a long marinate/rest requirement
+function detectMarinateWarning(text) {
+  if (!text) return null;
+  const lower = text.toLowerCase();
+  if (/overnight/.test(lower)) return { label: 'Needs overnight marinating or resting', hours: 8 };
+  const hoursMatch = lower.match(/(?:marinate|soak|rest|chill|refrigerate)[^.]*?(\d+)\s*(?:to\s*\d+\s*)?hours?/);
+  if (hoursMatch) {
+    const hrs = parseInt(hoursMatch[1], 10);
+    if (hrs >= 1) return { label: `Needs ~${hrs}h of marinating or resting`, hours: hrs };
+  }
+  const daysMatch = lower.match(/(\d+)\s*days?/);
+  if (daysMatch) {
+    const days = parseInt(daysMatch[1], 10);
+    if (days >= 1) return { label: `Needs ${days} day${days > 1 ? 's' : ''} of preparation`, hours: days * 24 };
+  }
+  return null;
+}
+
+// Split raw instruction text into discrete steps, each annotated with
+// the ingredient names it mentions and its phase (prep / cook).
+function parseInstructions(text, ingredients) {
+  if (!text) return [];
+
+  const ingredientNames = ingredients.map(i => i.ingredient.toLowerCase());
+
+  // Detect numbered steps: "1.", "1)", "Step 1:", "STEP 1 -" etc.
+  const hasNumberedSteps = /(?:^|\n)\s*(?:step\s+)?\d+[.):\s-]/i.test(text);
+
+  let steps;
+  if (hasNumberedSteps) {
+    steps = text
+      .split(/\n?\s*(?:step\s+)?\d+[.):\s-]+/i)
+      .map(s => s.replace(/\r/g, '').trim())
+      .filter(s => s.length > 8);
+  } else {
+    steps = text
+      .split(/\n{2,}/)
+      .flatMap(para => {
+        const trimmed = para.replace(/\r/g, '').trim();
+        if (!trimmed) return [];
+        if (trimmed.length > 150) {
+          return trimmed
+            .split(/(?<=[.!?])\s+(?=[A-Z])/)
+            .map(s => s.trim())
+            .filter(s => s.length > 8);
+        }
+        return [trimmed];
+      })
+      .filter(Boolean);
+
+    if (steps.length <= 1) {
+      steps = text
+        .split(/\n/)
+        .map(s => s.replace(/\r/g, '').trim())
+        .filter(s => s.length > 8);
+    }
+  }
+
+  return steps.map((stepText, idx) => {
+    const lower = stepText.toLowerCase();
+    const used = ingredientNames.filter(name => {
+      if (lower.includes(name)) return true;
+      if (name.includes(' ')) {
+        const firstWord = name.split(' ').find(w => w.length > 3);
+        if (firstWord && lower.includes(firstWord)) return true;
+      }
+      return false;
+    });
+    return { number: idx + 1, text: stepText, ingredients: used, phase: stepPhase(stepText) };
+  });
+}
+
 export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSelect }) {
   const [fullRecipe, setFullRecipe] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +144,6 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
     MEALS,
     mealPlan,
     addToMealPlan,
-    addToCookingHistory,
     getRecipeNote,
     setRecipeNote,
     getRecipeRating,
@@ -179,20 +289,13 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
     setShowMealPlanModal(true);
   };
 
-  const handleMarkAsCooked = () => {
-    addToCookingHistory(recipe.idMeal);
-    if (!isSaved) {
-      saveRecipe(fullRecipe || recipe);
-    }
-  };
-
-  const handleSaveNote = () => {
+const handleSaveNote = () => {
     setRecipeNote(recipe.idMeal, note);
     setShowNoteInput(false);
   };
 
   const handleShare = async () => {
-    const url = `https://www.themealdb.com/meal/${recipe.idMeal}`;
+    const url = `${window.location.origin}/#recipe/${recipe.idMeal}`;
     const shareData = {
       title: recipe.strMeal,
       text: `Check out this recipe: ${recipe.strMeal}`,
@@ -258,7 +361,7 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
               <div className="relative aspect-[16/10]">
                 <img
                   src={recipe.strMealThumb}
-                  alt={recipe.strMeal}
+                  alt={[recipe.strMeal, recipe.strArea && `${recipe.strArea} cuisine`, recipe.strCategory].filter(Boolean).join(' — ')}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -299,6 +402,18 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
                   )}
                 </div>
               </div>
+
+              {/* Dish description — prominent block between image and main content */}
+              {(() => {
+                const desc = buildDescription(recipe, rawIngredients);
+                return desc ? (
+                  <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/40 border-b border-gray-100 dark:border-gray-800">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {desc}
+                    </p>
+                  </div>
+                ) : null;
+              })()}
 
               <div className="p-6 space-y-6">
                 {/* Rating */}
@@ -346,18 +461,6 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
                     </svg>
                     Add to Plan
-                  </motion.button>
-
-                  <motion.button
-                    onClick={handleMarkAsCooked}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="py-3 px-4 rounded-2xl font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 transition-all duration-200 flex items-center justify-center gap-2"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Cooked
                   </motion.button>
 
                   <motion.button
@@ -665,27 +768,111 @@ export function RecipeDrawer({ recipe, isOpen, onClose, onTagClick, onRecipeSele
                       </ul>
                     </div>
 
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
-                          👨‍🍳
-                        </span>
-                        Instructions
-                      </h3>
-                      <div className="space-y-4">
-                        {fullRecipe.strInstructions.split('\n').filter(Boolean).map((paragraph, i) => (
-                          <motion.p
-                            key={i}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            className="text-gray-600 dark:text-gray-400 leading-relaxed"
-                          >
-                            {paragraph}
-                          </motion.p>
-                        ))}
-                      </div>
-                    </div>
+                    {(() => {
+                      const steps = parseInstructions(fullRecipe.strInstructions, rawIngredients);
+                      const marinateWarning = detectMarinateWarning(fullRecipe.strInstructions);
+                      const hasPrepPhase = steps.some(s => s.phase === 'prep');
+                      let lastPhase = null;
+
+                      return (
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                              👨‍🍳
+                            </span>
+                            Instructions
+                          </h3>
+
+                          {/* Marinate / long-rest warning ribbon */}
+                          {marinateWarning && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mb-5 flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                            >
+                              <span className="text-lg">⏰</span>
+                              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                                {marinateWarning.label}
+                              </p>
+                            </motion.div>
+                          )}
+
+                          <div className="space-y-4">
+                            {steps.map((step, i) => {
+                              const showPhaseHeader = hasPrepPhase && step.phase !== lastPhase;
+                              lastPhase = step.phase;
+
+                              return (
+                                <div key={i}>
+                                  {/* Phase section header */}
+                                  {showPhaseHeader && (
+                                    <div className={`flex items-center gap-2 mb-3 ${i > 0 ? 'mt-6' : ''}`}>
+                                      <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
+                                        step.phase === 'prep'
+                                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                                          : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                                      }`}>
+                                        {step.phase === 'prep' ? '🔪 Prep' : '🍳 Cook'}
+                                      </span>
+                                      <div className="flex-1 h-px bg-gray-100 dark:bg-gray-800" />
+                                    </div>
+                                  )}
+
+                                  {/* Step card */}
+                                  <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.04 }}
+                                    className="flex gap-4"
+                                  >
+                                    {/* Step number */}
+                                    <div className={`shrink-0 w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center mt-0.5 ${
+                                      step.phase === 'prep'
+                                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                        : 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
+                                    }`}>
+                                      {step.number}
+                                    </div>
+
+                                    {/* Step body */}
+                                    <div className="flex-1 space-y-2 pb-1">
+                                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
+                                        {step.text}
+                                      </p>
+                                      {step.ingredients.length > 0 && (
+                                        <div className="flex flex-wrap gap-1.5">
+                                          {step.ingredients.map(ing => {
+                                            const ci = classifiedIngredients.find(
+                                              c => c.ingredient.toLowerCase() === ing
+                                            );
+                                            const inPantry = ci?.inPantry;
+                                            return (
+                                              <span
+                                                key={ing}
+                                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                  inPantry
+                                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                                                }`}
+                                              >
+                                                {inPantry && (
+                                                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 dark:bg-green-400" />
+                                                )}
+                                                {[ci?.measure?.trim(), ci?.ingredient || ing].filter(Boolean).join(' ')}
+                                              </span>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {fullRecipe.strYoutube && (
                       <motion.a

@@ -207,6 +207,46 @@ export function Settings({ onShowPrivacyPolicy }) {
         </div>
       </div>
 
+      {/* Week Start Day */}
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <h3 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+          <span>📅</span> Week Starts On
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Controls how your meal plan is laid out. Auto-detected from your locale.
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => updateSetting('weekStartDay', 'monday')}
+            className={`p-4 rounded-xl border-2 transition-all ${
+              settings.weekStartDay === 'monday'
+                ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20'
+                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+            }`}
+          >
+            <div className="text-2xl mb-2">🇪🇺</div>
+            <div className="font-bold text-gray-900 dark:text-white">Monday</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Mon → Sun</div>
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => updateSetting('weekStartDay', 'sunday')}
+            className={`p-4 rounded-xl border-2 transition-all ${
+              settings.weekStartDay === 'sunday'
+                ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20'
+                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+            }`}
+          >
+            <div className="text-2xl mb-2">🇺🇸</div>
+            <div className="font-bold text-gray-900 dark:text-white">Sunday</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sun → Sat</div>
+          </motion.button>
+        </div>
+      </div>
+
       {/* Default Servings */}
       <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <h3 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
