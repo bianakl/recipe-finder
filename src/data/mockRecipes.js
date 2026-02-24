@@ -1,6 +1,7 @@
 export const MOCK_RECIPES = [
   {
     idMeal: 'mock1',
+    strDescription: 'Silky egg-and-Pecorino sauce clings to al dente spaghetti with crispy guanciale and cracked black pepper. No cream ever.',
     strMeal: 'Spaghetti Carbonara',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg',
     strCategory: 'Pasta',
@@ -19,6 +20,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock2',
+    strDescription: 'Sticky-glazed chicken thighs lacquered in soy, mirin, and sake over steamed rice with sesame seeds and pickled cucumber.',
     strMeal: 'Chicken Teriyaki Bowl',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg',
     strCategory: 'Chicken',
@@ -37,6 +39,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock3',
+    strDescription: 'Chunky tomato, cucumber, and kalamata olive salad with crumbled feta and dried oregano, dressed simply in olive oil.',
     strMeal: 'Greek Salad',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/k29viq1585565980.jpg',
     strCategory: 'Salad',
@@ -55,6 +58,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock4',
+    strDescription: 'Seasoned ground beef with cumin and chili in warm corn tortillas, topped with cheddar, pico de gallo, and sour cream.',
     strMeal: 'Beef Tacos',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/ypxvwv1505333929.jpg',
     strCategory: 'Beef',
@@ -73,6 +77,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock5',
+    strDescription: 'Crisp-tender broccoli, snap peas, and bell pepper tossed in a ginger-soy-sesame sauce over high heat. Ready in 15 minutes.',
     strMeal: 'Vegetable Stir Fry',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/ouyswv1511553755.jpg',
     strCategory: 'Vegetarian',
@@ -91,6 +96,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock6',
+    strDescription: 'Thin Neapolitan pizza with hand-crushed tomato, torn fresh mozzarella, and basil, baked until the crust blisters and chars.',
     strMeal: 'Margherita Pizza',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/x0lk931587671540.jpg',
     strCategory: 'Pizza',
@@ -109,6 +115,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock7',
+    strDescription: 'Pan-seared salmon fillet with golden crispy skin, finished with a bright lemon-butter and fresh dill sauce.',
     strMeal: 'Salmon with Lemon Dill',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1548772327.jpg',
     strCategory: 'Seafood',
@@ -127,6 +134,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock8',
+    strDescription: 'Fragrant coconut milk curry with green chile paste, Thai basil, and chicken or tofu over jasmine rice.',
     strMeal: 'Thai Green Curry',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/sstssx1487349585.jpg',
     strCategory: 'Curry',
@@ -145,6 +153,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock9',
+    strDescription: 'Smashed ripe avocado with lime and red pepper flakes on toasted sourdough, topped with everything bagel seasoning and microgreens.',
     strMeal: 'Avocado Toast',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wpuvqv1511640296.jpg',
     strCategory: 'Breakfast',
@@ -163,6 +172,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock10',
+    strDescription: 'Rolled oats soaked overnight in yogurt and milk with chia seeds, topped with fresh berries and a drizzle of maple syrup.',
     strMeal: 'Overnight Oats',
     strMealThumb: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=400&h=400&fit=crop',
     strCategory: 'Breakfast',
@@ -181,6 +191,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock11',
+    strDescription: 'Poached eggs on toasted English muffin with Canadian bacon, blanketed in rich hollandaise and a dusting of paprika.',
     strMeal: 'Eggs Benedict',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1550440197.jpg',
     strCategory: 'Breakfast',
@@ -199,6 +210,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock12',
+    strDescription: 'Warm quinoa with roasted sweet potato, chickpeas, avocado, and kale, drizzled with tahini-lemon dressing.',
     strMeal: 'Quinoa Buddha Bowl',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1525876226.jpg',
     strCategory: 'Vegetarian',
@@ -218,6 +230,7 @@ export const MOCK_RECIPES = [
   // POTATO DISHES
   {
     idMeal: 'mock26',
+    strDescription: 'Cubed beef chuck slow-simmered with chili powder, cumin, and jalapeños for 3 hours. No beans, no tomatoes. Pure beef chili.',
     strMeal: 'Loaded Baked Potatoes',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/trpwpy1511724497.jpg',
     strCategory: 'Side',
@@ -236,6 +249,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock27',
+    strDescription: 'Ground beef and kidney beans in a spiced tomato sauce with chili powder and cumin, simmered until thick and rich.',
     strMeal: 'Crispy Garlic Roasted Potatoes',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/ebvuyr1511732569.jpg',
     strCategory: 'Side',
@@ -254,6 +268,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock28',
+    strDescription: 'Shredded chicken and white beans in a creamy green chile broth with cumin, finished with cream cheese and sour cream.',
     strMeal: 'Creamy Mashed Potatoes',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1550441882.jpg',
     strCategory: 'Side',
@@ -273,6 +288,7 @@ export const MOCK_RECIPES = [
   // EXOTIC & UNIQUE DISHES
   {
     idMeal: 'mock13',
+    strDescription: 'Tender snails baked in their shells under a rich compound butter of garlic, shallot, fresh parsley, and a splash of Pernod.',
     strMeal: 'Escargot à la Bourguignonne',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/oe8rg51699014028.jpg',
     strCategory: 'Starter',
@@ -292,6 +308,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock14',
+    strDescription: 'Barely seared wagyu sliced paper-thin and dressed with ponzu, grated daikon, and shiso leaves. The marbling melts on contact.',
     strMeal: 'Japanese Wagyu Beef Tataki',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1529446352.jpg',
     strCategory: 'Beef',
@@ -311,6 +328,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock15',
+    strDescription: 'Slow-braised lamb shoulder with preserved lemon, green olives, and a warming ras el hanout spice blend, served over couscous.',
     strMeal: 'Moroccan Lamb Tagine',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/yuwtuu1511295751.jpg',
     strCategory: 'Lamb',
@@ -330,6 +348,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock16',
+    strDescription: 'Raw sea bass cured in lime juice with aji amarillo, red onion, and cilantro. Served with sweet potato and toasted corn.',
     strMeal: 'Peruvian Ceviche',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1520084413.jpg',
     strCategory: 'Seafood',
@@ -349,6 +368,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock17',
+    strDescription: 'Warm rice topped with sauteed vegetables, marinated beef bulgogi, and a fried egg, mixed at the table with gochujang.',
     strMeal: 'Korean Bibimbap',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/z0ageb1583189517.jpg',
     strCategory: 'Rice',
@@ -368,6 +388,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock18',
+    strDescription: 'Clear, deeply aromatic beef bone broth with star anise and charred ginger, served with rice noodles, rare beef, and fresh herbs.',
     strMeal: 'Vietnamese Pho Bo',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/whvwsq1511882084.jpg',
     strCategory: 'Soup',
@@ -387,6 +408,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock19',
+    strDescription: 'Chicken slow-braised in a thick berbere and niter kibbeh sauce with whole hard-boiled eggs, served on sourdough injera.',
     strMeal: 'Ethiopian Doro Wat',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1520081754.jpg',
     strCategory: 'Chicken',
@@ -406,6 +428,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock20',
+    strDescription: 'Briny, creamy sea urchin and salmon roe over warm seasoned sushi rice with wasabi, soy, and nori strips. Intensely oceanic.',
     strMeal: 'Japanese Uni Donburi',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg',
     strCategory: 'Seafood',
@@ -425,6 +448,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock21',
+    strDescription: 'Char-grilled chicken in a velvety tomato-cream sauce with kasuri methi and garam masala. Mild heat, deeply layered flavor.',
     strMeal: 'Indian Butter Chicken',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg',
     strCategory: 'Chicken',
@@ -444,6 +468,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock22',
+    strDescription: 'Silken tofu in a fiery sauce of doubanjiang, fermented black bean, and mouth-numbing Sichuan peppercorn with minced pork.',
     strMeal: 'Sichuan Mapo Tofu',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1525874812.jpg',
     strCategory: 'Tofu',
@@ -463,6 +488,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock23',
+    strDescription: 'Saffron-stained bomba rice cooked flat in a wide pan with rabbit and chicken until a crispy socarrat crust forms at the bottom.',
     strMeal: 'Spanish Paella Valenciana',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg',
     strCategory: 'Rice',
@@ -482,6 +508,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock24',
+    strDescription: 'Chicken braised in soy sauce, coconut vinegar, bay leaves, and garlic until the sauce reduces to a sticky, savory glaze.',
     strMeal: 'Filipino Adobo',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/d1vps41614349961.jpg',
     strCategory: 'Chicken',
@@ -501,6 +528,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock25',
+    strDescription: 'Spiced ground lamb shaped around flat skewers and grilled until charred, served with sumac onions and yogurt sauce on lavash.',
     strMeal: 'Turkish Lamb Kofte',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/b79r6f1585566277.jpg',
     strCategory: 'Lamb',
@@ -575,6 +603,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock29',
+    strDescription: 'Black, kidney, and pinto beans simmered with diced tomatoes, chili powder, and a touch of cocoa powder for depth.',
     strMeal: 'Vegetarian Three Bean Chili',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/tvttqv1504640475.jpg',
     strCategory: 'Vegetarian',
@@ -593,6 +622,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock30',
+    strDescription: 'Fine-textured ground beef spiced with cinnamon and allspice, served Midwestern style over spaghetti with shredded cheddar.',
     strMeal: 'Cincinnati Chili',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1529443236.jpg',
     strCategory: 'Beef',
@@ -612,6 +642,7 @@ export const MOCK_RECIPES = [
   // MORE CHICKEN VARIETY
   {
     idMeal: 'mock31',
+    strDescription: 'Breaded chicken breast fried golden, topped with marinara and bubbling mozzarella. Served over spaghetti.',
     strMeal: 'Chicken Parmesan',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/sypgrt1511815398.jpg',
     strCategory: 'Chicken',
@@ -630,6 +661,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock32',
+    strDescription: 'Crispy-skinned chicken thighs seared and glazed in a sticky sauce of honey, soy sauce, and six cloves of garlic.',
     strMeal: 'Honey Garlic Chicken',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/xrttsx1487339558.jpg',
     strCategory: 'Chicken',
@@ -648,6 +680,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock33',
+    strDescription: 'Yogurt-marinated, char-grilled chicken in a creamy tomato and garam masala sauce. Bright orange, deeply aromatic.',
     strMeal: 'Chicken Tikka Masala',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wyxwsp1486979827.jpg',
     strCategory: 'Chicken',
@@ -666,6 +699,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock34',
+    strDescription: 'Crispy baked wings tossed in hot sauce and butter until fully coated. Served with celery sticks and blue cheese dip.',
     strMeal: 'Buffalo Chicken Wings',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/xqwwpy1483908697.jpg',
     strCategory: 'Chicken',
@@ -684,6 +718,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock35',
+    strDescription: 'Cornstarch-battered chicken fried crispy, then tossed in a sticky orange-soy-ginger sauce with fresh orange zest.',
     strMeal: 'Orange Chicken',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/k5tqxy1468383015.jpg',
     strCategory: 'Chicken',
@@ -702,6 +737,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock36',
+    strDescription: 'Spiced chicken thighs marinated in yogurt, cumin, and coriander, grilled and sliced thin for warm pita wraps with tahini.',
     strMeal: 'Chicken Shawarma',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/kcv6hj1598733479.jpg',
     strCategory: 'Chicken',
@@ -720,6 +756,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock37',
+    strDescription: 'Pan-seared chicken over fettuccine tossed in a rich butter, heavy cream, and parmesan sauce.',
     strMeal: 'Chicken Alfredo',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/syqypv1486981727.jpg',
     strCategory: 'Chicken',
@@ -738,6 +775,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock38',
+    strDescription: 'Spatchcocked whole chicken rubbed with lemon zest, rosemary, and thyme, roasted at high heat for shatteringly crispy skin.',
     strMeal: 'Lemon Herb Roasted Chicken',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1529446352.jpg',
     strCategory: 'Chicken',
@@ -757,6 +795,7 @@ export const MOCK_RECIPES = [
   // SWEET SNACKS & DESSERTS
   {
     idMeal: 'mock39',
+    strDescription: 'Dark chocolate individual cakes baked precisely so the outside sets while the center stays molten. Served with vanilla ice cream.',
     strMeal: 'Chocolate Lava Cake',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/0swsrx1511023340.jpg',
     strCategory: 'Dessert',
@@ -775,6 +814,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock40',
+    strDescription: 'Warm fudgy brownie topped with vanilla ice cream, hot fudge, caramel sauce, whipped cream, and toasted walnuts.',
     strMeal: 'Loaded Brownie Sundae',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1550441275.jpg',
     strCategory: 'Dessert',
@@ -793,6 +833,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock41',
+    strDescription: 'Tortilla chips layered with seasoned beef, cheddar, and refried beans, baked until melted, then piled with guacamole and salsa.',
     strMeal: 'Loaded Nachos Supreme',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1529085920.jpg',
     strCategory: 'Snack',
@@ -811,6 +852,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock42',
+    strDescription: 'Whole Oreos dipped in thick pancake batter and deep-fried until puffy and golden, dusted with powdered sugar and served warm.',
     strMeal: 'Deep Fried Oreos',
     strMealThumb: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=400&fit=crop',
     strCategory: 'Dessert',
@@ -829,6 +871,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock43',
+    strDescription: 'Crispy Spanish fried dough piped through a star tip, rolled in cinnamon sugar while hot, served with thick dipping chocolate.',
     strMeal: 'Churros with Chocolate',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/vwpqrw1511723001.jpg',
     strCategory: 'Dessert',
@@ -847,6 +890,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock44',
+    strDescription: 'Fresh mozzarella double-coated in Italian breadcrumbs and deep-fried until the cheese pulls in long, satisfying strings.',
     strMeal: 'Mozzarella Sticks',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/lhqev81565090111.jpg',
     strCategory: 'Snack',
@@ -865,6 +909,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock45',
+    strDescription: 'Heat-treated flour creamed with butter, brown sugar, and vanilla, studded with mini chocolate chips, rolled into no-bake bites.',
     strMeal: 'Cookie Dough Bites',
     strMealThumb: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=400&h=400&fit=crop',
     strCategory: 'Dessert',
@@ -883,6 +928,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock46',
+    strDescription: 'Fudgy dark chocolate brownies studded with white and milk chocolate chunks, baked until just set with a glossy crackled top.',
     strMeal: 'Triple Chocolate Brownies',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/yypvst1511386427.jpg',
     strCategory: 'Dessert',
@@ -901,6 +947,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock47',
+    strDescription: 'Fresh jalapeños stuffed with cream cheese, cheddar, and bacon, double-breaded and fried until the filling is molten inside.',
     strMeal: 'Jalapeño Poppers',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/sxysrt1468240488.jpg',
     strCategory: 'Snack',
@@ -919,6 +966,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock48',
+    strDescription: 'Dark chocolate shells filled with a sweetened peanut butter center. Two ingredients, better than store-bought.',
     strMeal: 'Peanut Butter Cups',
     strMealThumb: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=400&h=400&fit=crop',
     strCategory: 'Dessert',
@@ -937,6 +985,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock49',
+    strDescription: 'Eggs poached directly in a spiced tomato and pepper sauce until whites set but yolks stay runny. Topped with feta and cilantro.',
     strMeal: 'Shakshuka',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/58oia61564916529.jpg',
     strCategory: 'Breakfast',
@@ -955,6 +1004,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock50',
+    strDescription: 'Silky chickpea dip blended with tahini, lemon juice, and garlic until smooth, drizzled with olive oil and smoked paprika.',
     strMeal: 'Hummus',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/tkxquw1628771028.jpg',
     strCategory: 'Snack',
@@ -973,6 +1023,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock51',
+    strDescription: 'A Brazilian black bean stew slow-cooked with pork ribs and smoked sausage until thick and deeply savory.',
     strMeal: 'Feijoada',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1529444830.jpg',
     strCategory: 'Dinner',
@@ -991,6 +1042,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock52',
+    strDescription: 'Scotch bonnet and allspice marinated chicken grilled until charred and smoky, with heat that builds through every bite.',
     strMeal: 'Jerk Chicken',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1548772327.jpg',
     strCategory: 'BBQ',
@@ -1009,6 +1061,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock53',
+    strDescription: 'Polish dumplings filled with mashed potato and cheddar, boiled then pan-fried in butter until crispy on the flat sides.',
     strMeal: 'Pierogi',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg',
     strCategory: 'Dinner',
@@ -1027,6 +1080,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock54',
+    strDescription: 'Long grain rice cooked in a blended pepper and tomato base with thyme and curry, developing a slightly smoky bottom crust.',
     strMeal: 'Jollof Rice',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg',
     strCategory: 'Dinner',
@@ -1045,6 +1099,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock55',
+    strDescription: 'Georgian bread boats filled with cheese and egg, baked until the filling bubbles, finished with a pat of butter at the table.',
     strMeal: 'Khachapuri',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wuxrtu1483564410.jpg',
     strCategory: 'Breakfast',
@@ -1063,6 +1118,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock56',
+    strDescription: 'Grilled finger-shaped Bosnian sausages of beef and lamb, served in flatbread with raw onion and ajvar red pepper relish.',
     strMeal: 'Cevapi',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/urzj1d1587066726.jpg',
     strCategory: 'BBQ',
@@ -1081,6 +1137,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock57',
+    strDescription: 'Brazilian chocolate truffles of condensed milk and cocoa, rolled into balls and coated in chocolate sprinkles.',
     strMeal: 'Brigadeiros',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/qptpvt1487339892.jpg',
     strCategory: 'Dessert',
@@ -1099,6 +1156,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock58',
+    strDescription: 'Fragrant coconut and pandan rice served on banana leaf with crispy anchovies, spicy sambal, roasted peanuts, and a boiled egg.',
     strMeal: 'Nasi Lemak',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/ysxwuq1487323065.jpg',
     strCategory: 'Breakfast',
@@ -1117,6 +1175,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock59',
+    strDescription: 'Uzbek lamb and rice pilaf cooked in one pot with carrots, cumin seeds, and whole garlic heads until the grains absorb the fat.',
     strMeal: 'Plov',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg',
     strCategory: 'Dinner',
@@ -1135,6 +1194,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock60',
+    strDescription: 'Herb-stuffed fish fried and then simmered with cassava and cabbage in tomato broth over broken rice. Served family-style.',
     strMeal: 'Thieboudienne',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/sytuqu1511553755.jpg',
     strCategory: 'Seafood',
@@ -1153,6 +1213,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock61',
+    strDescription: 'Argentinian baked pastry pockets stuffed with spiced ground beef, green olives, and hard-boiled egg, glazed with egg wash.',
     strMeal: 'Empanadas',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1525876468.jpg',
     strCategory: 'Street Food',
@@ -1171,6 +1232,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock62',
+    strDescription: 'Egyptian street food classic: layers of rice, lentils, and macaroni topped with spicy tomato sauce and crispy caramelized onions.',
     strMeal: 'Koshari',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/qtuwuq1468233098.jpg',
     strCategory: 'Comfort Food',
@@ -1189,6 +1251,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock63',
+    strDescription: 'A Colombian feast platter of red beans, chorizo, fried egg, sweet plantain, arepa, and avocado served all on one tray.',
     strMeal: 'Bandeja Paisa',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg',
     strCategory: 'Dinner',
@@ -1207,6 +1270,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock64',
+    strDescription: 'Diced sushi-grade ahi tuna marinated in soy and sesame over seasoned rice with avocado, edamame, and spicy mayo.',
     strMeal: 'Poke Bowl',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/uuuspp1468263334.jpg',
     strCategory: 'Lunch',
@@ -1225,6 +1289,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock65',
+    strDescription: 'Soft-boiled eggs wrapped in seasoned sausage meat, double-breaded and deep-fried until deeply golden. British pub classic.',
     strMeal: 'Scotch Eggs',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/xxyupu1468262513.jpg',
     strCategory: 'Snack',
@@ -1243,6 +1308,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock66',
+    strDescription: 'Small pork and beef meatballs simmered in a velvety cream and beef stock gravy, served with mashed potatoes and lingonberry.',
     strMeal: 'Swedish Meatballs',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/kvbopc1581012881.jpg',
     strCategory: 'Comfort Food',
@@ -1261,6 +1327,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock67',
+    strDescription: 'Portuguese custard tarts with flaky puff pastry shells and a rich egg yolk custard, baked until dark spots appear on top.',
     strMeal: 'Pasteis de Nata',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg',
     strCategory: 'Dessert',
@@ -1279,6 +1346,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock68',
+    strDescription: 'Layered Greek bake of roasted eggplant, spiced ground lamb, and an egg-enriched bechamel, baked golden and bubbling.',
     strMeal: 'Moussaka',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/hqaejl1695738653.jpg',
     strCategory: 'Dinner',
@@ -1297,6 +1365,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock69',
+    strDescription: 'Lebanese chopped salad with crispy toasted pita, tomato, cucumber, and a bright sumac-lemon dressing. Toss just before serving.',
     strMeal: 'Fattoush',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/58oia61564916529.jpg',
     strCategory: 'Salad',
@@ -1315,6 +1384,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock70',
+    strDescription: 'Red lentils simmered with turmeric and tomato, finished with a hot coconut oil temper of mustard seeds and fresh curry leaves.',
     strMeal: 'Sri Lankan Dhal Curry',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/tkxquw1628771028.jpg',
     strCategory: 'Vegetarian',
@@ -1333,6 +1403,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock71',
+    strDescription: 'Griddled and baked Venezuelan corn cakes with a crispy shell, split open and stuffed with shredded chicken, beans, and avocado.',
     strMeal: 'Arepas',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1529444830.jpg',
     strCategory: 'Street Food',
@@ -1351,6 +1422,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock72',
+    strDescription: 'Cod fillets battered in cold sparkling water and fried until shattering-crispy, with double-fried thick-cut chips.',
     strMeal: 'Fish and Chips',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1548772327.jpg',
     strCategory: 'Seafood',
@@ -1369,6 +1441,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock73',
+    strDescription: 'Tonkotsu broth simmered from pork bones for 4 hours, served with springy noodles, chashu pork, and a soy-marinated soft egg.',
     strMeal: 'Ramen',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg',
     strCategory: 'Soup',
@@ -1387,6 +1460,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock74',
+    strDescription: 'Wide rice noodles charred in a screaming-hot wok with chicken, Chinese broccoli, egg, and dark soy sauce.',
     strMeal: 'Pad See Ew',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg',
     strCategory: 'Dinner',
@@ -1405,6 +1479,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock75',
+    strDescription: 'Thai hot and sour broth infused with lemongrass, galangal, and kaffir lime, with shrimp and mushrooms. Aggressively aromatic.',
     strMeal: 'Tom Yum Soup',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wuxrtu1483564410.jpg',
     strCategory: 'Soup',
@@ -1423,6 +1498,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock76',
+    strDescription: 'Buttered phyllo layers with chopped walnuts and pistachios, baked until crisp and golden, then soaked in honey syrup.',
     strMeal: 'Baklava',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/urzj1d1587066726.jpg',
     strCategory: 'Dessert',
@@ -1441,6 +1517,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock77',
+    strDescription: 'Ladyfingers soaked in espresso and Marsala layered with mascarpone cream, chilled for 6 hours and dusted generously in cocoa.',
     strMeal: 'Tiramisu',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/qptpvt1487339892.jpg',
     strCategory: 'Dessert',
@@ -1459,6 +1536,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock78',
+    strDescription: 'Silky vanilla custard baked in a water bath until just set, chilled, then torched to order with a glass-like caramel crust.',
     strMeal: 'Creme Brulee',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/ysxwuq1487323065.jpg',
     strCategory: 'Dessert',
@@ -1477,6 +1555,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock79',
+    strDescription: 'Pork marinated in achiote and guajillo chiles, grilled until caramelized, served in corn tortillas with grilled pineapple.',
     strMeal: 'Tacos al Pastor',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg',
     strCategory: 'Street Food',
@@ -1495,6 +1574,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock80',
+    strDescription: 'Pillowy potato dumplings boiled until they float, then pan-fried in brown butter with fresh sage leaves and grated parmesan.',
     strMeal: 'Gnocchi',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/sytuqu1511553755.jpg',
     strCategory: 'Dinner',
@@ -1513,6 +1593,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock81',
+    strDescription: 'Arborio rice stirred patiently with white wine and hot stock, folded with deeply sauteed mixed mushrooms until creamy and al dente.',
     strMeal: 'Risotto ai Funghi',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1525876468.jpg',
     strCategory: 'Dinner',
@@ -1531,6 +1612,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock82',
+    strDescription: 'Double-fried chips piled with fresh cheese curds, topped with hot brown gravy so the curds soften without fully melting.',
     strMeal: 'Poutine',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg',
     strCategory: 'Comfort Food',
@@ -1549,6 +1631,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock83',
+    strDescription: 'Lacquered duck with shatteringly crispy skin, carved at the table, wrapped in thin pancakes with hoisin sauce and scallions.',
     strMeal: 'Peking Duck',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/qtuwuq1468233098.jpg',
     strCategory: 'Dinner',
@@ -1567,6 +1650,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock84',
+    strDescription: 'Crispy fried Indian pastry cones stuffed with spiced potato, peas, and garam masala. Served with tamarind and mint chutney.',
     strMeal: 'Samosas',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/uuuspp1468263334.jpg',
     strCategory: 'Street Food',
@@ -1585,6 +1669,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock85',
+    strDescription: 'Deep-fried chickpea and fresh herb patties with a dark crispy crust and a bright green, fluffy interior. Served in pita.',
     strMeal: 'Falafel',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/xxyupu1468262513.jpg',
     strCategory: 'Street Food',
@@ -1603,6 +1688,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock86',
+    strDescription: 'Deep crimson Ukrainian soup of beef shin, grated beetroot, cabbage, and potato, finished with vinegar and a spoonful of sour cream.',
     strMeal: 'Borscht',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/kvbopc1581012881.jpg',
     strCategory: 'Soup',
@@ -1621,6 +1707,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock87',
+    strDescription: 'Buttery laminated pastry built with 27 layers, proofed until doubled, baked at high heat until shatteringly crispy and flaky.',
     strMeal: 'Croissants',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg',
     strCategory: 'Breakfast',
@@ -1639,6 +1726,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock88',
+    strDescription: 'Thick-cut ribeye grilled to medium-rare, rested and sliced, served drenched in Argentinian parsley and red wine vinegar chimichurri.',
     strMeal: 'Chimichurri Steak',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/hqaejl1695738653.jpg',
     strCategory: 'BBQ',
@@ -1657,6 +1745,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock89',
+    strDescription: 'Lamb shoulder braised 2 hours with dried apricots, honey, and saffron until fall-apart tender. Served over couscous with almonds.',
     strMeal: 'Moroccan Tagine',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/58oia61564916529.jpg',
     strCategory: 'Dinner',
@@ -1675,6 +1764,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock90',
+    strDescription: 'Large shrimp in a coconut milk and scotch bonnet curry with allspice and thyme, finished with lime over coconut rice.',
     strMeal: 'Caribbean Coconut Curry Shrimp',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/tkxquw1628771028.jpg',
     strCategory: 'Seafood',
@@ -1693,6 +1783,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock91',
+    strDescription: 'Rolled oats soaked overnight with chia seeds and Greek yogurt, topped with fresh berries and a drizzle of maple syrup.',
     strMeal: 'Overnight Oats',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1529444830.jpg',
     strCategory: 'Breakfast',
@@ -1711,6 +1802,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock92',
+    strDescription: 'Double-fried chicken wings for maximum crunch, tossed immediately in a sticky gochujang and honey glaze with sesame seeds.',
     strMeal: 'Korean Fried Chicken',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/1548772327.jpg',
     strCategory: 'Dinner',
@@ -1729,6 +1821,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock93',
+    strDescription: 'Mashed ripe avocado on sourdough with lime, red pepper flakes, everything bagel seasoning, microgreens, and olive oil.',
     strMeal: 'Avocado Toast',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg',
     strCategory: 'Breakfast',
@@ -1747,6 +1840,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock94',
+    strDescription: 'Spiced ground lamb kneaded with onion, parsley, cumin, and coriander, shaped on skewers and grilled until charred outside.',
     strMeal: 'Lamb Kofta Kebabs',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/urzj1d1587066726.jpg',
     strCategory: 'BBQ',
@@ -1765,6 +1859,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock95',
+    strDescription: 'Warm dark chocolate cakes baked so the edges set while the center stays liquid, served with vanilla ice cream.',
     strMeal: 'Chocolate Lava Cake',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg',
     strCategory: 'Dessert',
@@ -1783,6 +1878,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock96',
+    strDescription: 'Cooled quinoa tossed with cucumber, cherry tomatoes, kalamata olives, feta, and a bright lemon-oregano vinaigrette.',
     strMeal: 'Mediterranean Quinoa Salad',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg',
     strCategory: 'Salad',
@@ -1801,6 +1897,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock97',
+    strDescription: 'Steamed cauliflower in a sharp cheddar and cream sauce with cream cheese, topped with bacon and broiled until bubbly.',
     strMeal: 'Keto Cauliflower Mac and Cheese',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/sytuqu1511553755.jpg',
     strCategory: 'Comfort Food',
@@ -1819,6 +1916,7 @@ export const MOCK_RECIPES = [
   },
   {
     idMeal: 'mock98',
+    strDescription: 'Thick blended frozen acai with banana, spooned into a bowl and topped with granola, sliced strawberries, and shaved coconut.',
     strMeal: 'Acai Bowl',
     strMealThumb: 'https://www.themealdb.com/images/media/meals/hqaejl1695738653.jpg',
     strCategory: 'Breakfast',

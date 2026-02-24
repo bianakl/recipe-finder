@@ -7,10 +7,10 @@ import { getRecipeById, parseIngredients, scaleIngredients, ingredientMatchesPan
 import { StarRating } from './StarRating';
 import { PricingModal } from './PricingModal';
 
-// Build a human-readable description from TheMealDB metadata + ingredient list.
-// Generates a sentence like "Chicken Teriyaki Bowl is a Japanese chicken dish made with chicken breast, soy sauce, and rice."
+// Returns strDescription if present, otherwise builds a fallback sentence from TheMealDB metadata.
 function buildDescription(recipe, ingredients = []) {
   if (!recipe) return null;
+  if (recipe.strDescription) return recipe.strDescription;
   const article = /^[aeiou]/i.test(recipe.strArea || '') ? 'an' : 'a';
   let sentence = '';
   if (recipe.strArea && recipe.strCategory) {
