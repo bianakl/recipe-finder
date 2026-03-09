@@ -80,6 +80,13 @@ function App() {
 
   const { results, isLoading, error, hasSearched } = useRecipeSearch(searchQuery);
 
+  // True while we're fetching a recipe from a deep-link URL on first load.
+  // Prevents the URL sync effect from reverting #recipe/... back to #search
+  // before the fetch completes.
+  const [deepLinkPending, setDeepLinkPending] = useState(
+    () => window.location.hash.slice(1).startsWith('recipe/')
+  );
+
   const handleCloseDrawer = () => {
     setSelectedRecipe(null);
   };
@@ -93,12 +100,16 @@ function App() {
     const hash = window.location.hash.slice(1);
     if (hash.startsWith('recipe/')) {
       const id = hash.split('/')[1];
-      getRecipeById(id).then(recipe => { if (recipe) setSelectedRecipe(recipe); }).catch(() => {});
+      getRecipeById(id)
+        .then(recipe => { if (recipe) setSelectedRecipe(recipe); })
+        .catch(() => {})
+        .finally(() => setDeepLinkPending(false));
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keep URL in sync with open recipe
   useEffect(() => {
+    if (deepLinkPending) return; // Don't touch the URL while the deep-link recipe is loading
     if (selectedRecipe) {
       const target = `#recipe/${selectedRecipe.idMeal}`;
       if (window.location.hash !== target) {
@@ -107,7 +118,7 @@ function App() {
     } else if (window.location.hash.startsWith('#recipe/')) {
       window.history.replaceState(window.history.state, '', `#${activeTab}`);
     }
-  }, [selectedRecipe, activeTab]);
+  }, [selectedRecipe, activeTab, deepLinkPending]);
 
   // Browser history integration for tabs
   useTabHistory(activeTab, setActiveTab, 'search');
